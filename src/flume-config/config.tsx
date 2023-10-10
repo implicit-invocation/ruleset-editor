@@ -1,6 +1,51 @@
-import { Colors, Controls, FlumeConfig } from "flume";
+import { Colors, Controls, FlumeConfig, NodeTypeConfig, PortType } from "flume";
 import { useState } from "react";
 import { eventEmitter } from "../util/eventEmitter";
+
+export const createTriggerableNode = (
+  config: NodeTypeConfig
+): NodeTypeConfig => {
+  return {
+    ...config,
+    inputs: (ports) => (data, connections, ctx) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let ownPorts: PortType[] = [];
+      if (config.inputs && Array.isArray(config.inputs)) {
+        ownPorts = config.inputs;
+      } else if (config.inputs && typeof config.inputs === "function") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const inputs = config.inputs(ports as any);
+        if (Array.isArray(inputs)) {
+          ownPorts = inputs;
+        } else {
+          ownPorts = inputs(data, connections, ctx);
+        }
+      }
+      return [
+        ports.trigger({ name: "trigger", label: "Trigger" }),
+        ...ownPorts,
+      ];
+    },
+    outputs: (ports) => (data, connection, ctx) => {
+      let ownPorts: PortType[] = [];
+      if (config.outputs && Array.isArray(config.outputs)) {
+        ownPorts = config.outputs;
+      } else if (config.outputs && typeof config.outputs === "function") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const outputs = config.outputs(ports);
+        if (Array.isArray(outputs)) {
+          ownPorts = outputs;
+        } else {
+          ownPorts = outputs(data, connection, ctx);
+        }
+      }
+      return [
+        ports.trigger({ name: "trigger", label: "Trigger" }),
+        ...ownPorts,
+      ];
+    },
+  };
+};
 
 export const config = new FlumeConfig();
 config.addPortType({
@@ -85,28 +130,29 @@ config.addPortType({
     }),
   ],
 });
-config.addNodeType({
-  type: "transform",
-  label: "Object Transform",
-  description:
-    "Transform a JSON object to another JSON object using JSONata expressions",
-  initialWidth: 300,
-  inputs: (ports) => (data) => {
-    return [
-      ports.trigger(),
-      ports.multivar({ hidePort: true }),
-      ...(data?.multivar?.variables || []).map((variable: string) =>
-        ports.object({ name: variable, label: variable })
-      ),
-      ports.string({
-        name: "expression",
-        label: "Expression (JSONata):",
-        hidePort: true,
-      }),
-    ];
-  },
-  outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "transform",
+    label: "Object Transform",
+    description:
+      "Transform a JSON object to another JSON object using JSONata expressions",
+    initialWidth: 300,
+    inputs: (ports) => (data) => {
+      return [
+        ports.multivar({ hidePort: true }),
+        ...(data?.multivar?.variables || []).map((variable: string) =>
+          ports.object({ name: variable, label: variable })
+        ),
+        ports.string({
+          name: "expression",
+          label: "Expression (JSONata):",
+          hidePort: true,
+        }),
+      ];
+    },
+    outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
+  })
+);
 
 config.addNodeType({
   type: "time",
@@ -116,50 +162,53 @@ config.addNodeType({
   outputs: (ports) => [ports.object({ name: "time", label: "Time" })],
 });
 
-config.addNodeType({
-  type: "stringTransform",
-  label: "String Transform",
-  description: "Transform a JSON object to a string using JSONata expressions",
-  initialWidth: 300,
-  inputs: (ports) => (data) => {
-    return [
-      ports.trigger(),
-      ports.multivar({ hidePort: true }),
-      ...(data?.multivar?.variables || []).map((variable: string) =>
-        ports.object({ name: variable, label: variable })
-      ),
-      ports.string({
-        name: "expression",
-        label: "Expression (JSONata):",
-        hidePort: true,
-      }),
-    ];
-  },
-  outputs: (ports) => [ports.string({ name: "string", label: "String" })],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "stringTransform",
+    label: "String Transform",
+    description:
+      "Transform a JSON object to a string using JSONata expressions",
+    initialWidth: 300,
+    inputs: (ports) => (data) => {
+      return [
+        ports.multivar({ hidePort: true }),
+        ...(data?.multivar?.variables || []).map((variable: string) =>
+          ports.object({ name: variable, label: variable })
+        ),
+        ports.string({
+          name: "expression",
+          label: "Expression (JSONata):",
+          hidePort: true,
+        }),
+      ];
+    },
+    outputs: (ports) => [ports.string({ name: "string", label: "String" })],
+  })
+);
 
-config.addNodeType({
-  type: "condition",
-  label: "Condition",
-  description:
-    "Calculate condition based on a fact given by a JSON object and a JSONata expression",
-  initialWidth: 300,
-  inputs: (ports) => (data) => {
-    return [
-      ports.trigger(),
-      ports.multivar({ hidePort: true }),
-      ...(data?.multivar?.variables || []).map((variable: string) =>
-        ports.object({ name: variable, label: variable })
-      ),
-      ports.string({
-        name: "expression",
-        label: "Expression (JSONata):",
-        hidePort: true,
-      }),
-    ];
-  },
-  outputs: (ports) => [ports.boolean({ name: "valid", label: "Valid" })],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "condition",
+    label: "Condition",
+    description:
+      "Calculate condition based on a fact given by a JSON object and a JSONata expression",
+    initialWidth: 300,
+    inputs: (ports) => (data) => {
+      return [
+        ports.multivar({ hidePort: true }),
+        ...(data?.multivar?.variables || []).map((variable: string) =>
+          ports.object({ name: variable, label: variable })
+        ),
+        ports.string({
+          name: "expression",
+          label: "Expression (JSONata):",
+          hidePort: true,
+        }),
+      ];
+    },
+    outputs: (ports) => [ports.boolean({ name: "valid", label: "Valid" })],
+  })
+);
 
 config.addNodeType({
   type: "text",
@@ -215,29 +264,29 @@ config.addNodeType({
   outputs: (ports) => [ports.boolean({ name: "output", label: "Output" })],
 });
 
-config.addNodeType({
-  type: "readData",
-  label: "Read data",
-  description: "Read data from a key-value store",
-  initialWidth: 200,
-  inputs: (ports) => [
-    ports.trigger({ name: "trigger", label: "Trigger" }),
-    ports.string({ name: "key", label: "Key" }),
-  ],
-  outputs: (ports) => [ports.object({ name: "value", label: "Value" })],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "readData",
+    label: "Read data",
+    description: "Read data from a key-value store",
+    initialWidth: 200,
+    inputs: (ports) => [ports.string({ name: "key", label: "Key" })],
+    outputs: (ports) => [ports.object({ name: "value", label: "Value" })],
+  })
+);
 
-config.addNodeType({
-  type: "writeData",
-  label: "Write data",
-  description: "Write data to a key-value store",
-  initialWidth: 200,
-  inputs: (ports) => [
-    ports.trigger({ name: "trigger", label: "Trigger" }),
-    ports.string({ name: "key", label: "Key" }),
-    ports.object({ name: "value", label: "Value" }),
-  ],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "writeData",
+    label: "Write data",
+    description: "Write data to a key-value store",
+    initialWidth: 200,
+    inputs: (ports) => [
+      ports.string({ name: "key", label: "Key" }),
+      ports.object({ name: "value", label: "Value" }),
+    ],
+  })
+);
 
 config.addPortType({
   type: "button",
@@ -270,6 +319,22 @@ config.addNodeType({
       name: "output",
       label: "Object",
     }),
+    ports.trigger({ name: "trigger", label: "Trigger" }),
+  ],
+});
+
+config.addNodeType({
+  type: "output",
+  label: "Output",
+  description: "Output data",
+  initialWidth: 200,
+  inputs: (ports) => [
+    ports.trigger({
+      name: "trigger",
+      label: "Trigger",
+    }),
+    ports.string({ name: "key", label: "Key" }),
+    ports.object({ name: "input", label: "Object" }),
   ],
 });
 
@@ -291,28 +356,30 @@ config.addNodeType({
   ],
 });
 
-config.addNodeType({
-  type: "call",
-  label: "Call engine function",
-  description: "Call a function from the engine",
-  initialWidth: 300,
-  inputs: (ports) => [
-    ports.trigger({ name: "trigger", label: "Trigger" }),
-    ports.string({ name: "function", label: "Function name" }),
-    ports.object({ name: "data", label: "Payload (object)" }),
-  ],
-  outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "call",
+    label: "Call engine function",
+    description: "Call a function from the engine",
+    initialWidth: 300,
+    inputs: (ports) => [
+      ports.string({ name: "function", label: "Function name" }),
+      ports.object({ name: "data", label: "Payload (object)" }),
+    ],
+    outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
+  })
+);
 
-config.addNodeType({
-  type: "log",
-  label: "Log",
-  description: "Log data to the console",
-  initialWidth: 200,
-  inputs: (ports) => [
-    ports.trigger({ name: "trigger", label: "Trigger" }),
-    ports.object({ name: "data", label: "Data" }),
-    ports.string({ name: "message", label: "Message" }),
-    ports.boolean({ name: "boolean", label: "Boolean" }),
-  ],
-});
+config.addNodeType(
+  createTriggerableNode({
+    type: "log",
+    label: "Log",
+    description: "Log data to the console",
+    initialWidth: 200,
+    inputs: (ports) => [
+      ports.object({ name: "data", label: "Data" }),
+      ports.string({ name: "message", label: "Message" }),
+      ports.boolean({ name: "boolean", label: "Boolean" }),
+    ],
+  })
+);
