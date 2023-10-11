@@ -1,18 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NodeEditor, NodeMap } from "flume";
 import { useCallback, useEffect, useState } from "react";
 import { config } from "./flume-config/config";
-import { KVStore, NodeRunner } from "./runtime";
+import { NodeRunner } from "./runtime";
+import { LeftPanel } from "./ui/panel/LeftPanel";
+import { Output } from "./ui/panel/Output";
 import { eventEmitter } from "./util/eventEmitter";
-
-export const LocalStorageKvStore: KVStore = {
-  async get(key) {
-    return JSON.parse(localStorage.getItem(key) || "{}");
-  },
-  async set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  },
-};
+import { LocalStorageKvStore } from "./util/kvStore";
 
 const testRun = async (nodeMap: NodeMap) => {
   console.log("==============================================");
@@ -35,7 +28,7 @@ export const App = () => {
   );
 
   const persistNodeMap = useCallback((nodeMap: NodeMap) => {
-    LocalStorageKvStore.set("nodeMap", nodeMap);
+    localStorage.setItem("nodeMap", JSON.stringify(nodeMap));
     setNodeMap(nodeMap);
   }, []);
 
@@ -52,20 +45,24 @@ export const App = () => {
     };
   }, [nodeMap]);
   return (
-    <div className="flex flex-1">
-      <NodeEditor
-        nodes={nodeMap}
-        onChange={persistNodeMap}
-        nodeTypes={config.nodeTypes}
-        portTypes={config.portTypes}
-        defaultNodes={[
-          {
-            type: "input",
-            x: -500,
-            y: 0,
-          },
-        ]}
-      />
+    <div className="flex-1 flex">
+      <LeftPanel />
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <NodeEditor
+          nodes={nodeMap}
+          onChange={persistNodeMap}
+          nodeTypes={config.nodeTypes}
+          portTypes={config.portTypes}
+          defaultNodes={[
+            {
+              type: "input",
+              x: -500,
+              y: 0,
+            },
+          ]}
+        />
+        <Output />
+      </div>
     </div>
   );
 };

@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "console-feed": "^3.5.0",
     "events": "^3.3.0",
     "flume": "^1.0.4",
     "jsonata": "^2.0.3",
+    "re-resizable": "^6.9.11",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0"
   },
   "devDependencies": {
     "@types/events": "^3.0.1",
