@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useState } from "react";
 import { Folder } from "./types";
 
 export type FolderActionCallback = (
+  action: "add" | "remove",
+  type: "item" | "folder",
   name: string,
   path: string[]
 ) => Promise<boolean> | boolean;
@@ -111,7 +113,7 @@ export const useFolder = (
   const add = useCallback(
     async (type: "item" | "folder", name: string, path: string[]) => {
       if (folderActionCallback) {
-        const shouldRun = await folderActionCallback(name, path);
+        const shouldRun = await folderActionCallback("add", type, name, path);
         if (!shouldRun) {
           return;
         }
@@ -143,7 +145,13 @@ export const useFolder = (
   const remove = useCallback(
     async (name: string, path: string[]) => {
       if (folderActionCallback) {
-        const shouldRun = await folderActionCallback(name, path);
+        const type = getPathType(folder, [...path, name]);
+        const shouldRun = await folderActionCallback(
+          "remove",
+          type,
+          name,
+          path
+        );
         if (!shouldRun) {
           return;
         }
