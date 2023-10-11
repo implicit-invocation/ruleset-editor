@@ -1,5 +1,6 @@
 import { Resizable } from "re-resizable";
 import {
+  AiFillDelete,
   AiOutlineDelete,
   AiOutlineDown,
   AiOutlineFolder,
@@ -127,6 +128,7 @@ export const FunctionFolderDisplay = ({
                         marginLeft: `-${path.length * 1}rem`,
                       }}
                     >
+                      <AiFillDelete className="h-4 w-4 text-red-400" />
                       <button
                         className="cursor-pointer bg-red-500 px-2 rounded-md w-12 shadow-md"
                         onClick={() => {
@@ -196,6 +198,7 @@ export const FunctionFolderDisplay = ({
                       marginLeft: `-${path.length * 1}rem`,
                     }}
                   >
+                    <AiFillDelete className="h-4 w-4 text-red-400" />
                     <button
                       className="cursor-pointer bg-red-500 px-2 rounded-md w-12 shadow-md"
                       onClick={() => {
