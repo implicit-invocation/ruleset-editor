@@ -81,7 +81,7 @@ export const FunctionFolderDisplay = ({
     deletionConfirm,
   } = useFolderContext();
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col">
       {folder.children.sort(compareFolderNode).map((child) => {
         const childPath = [...path, child.name];
 
@@ -90,7 +90,7 @@ export const FunctionFolderDisplay = ({
             <div key={child.name} className="flex flex-col">
               <div
                 className={[
-                  "flex items-center gap-1 cursor-pointer hover:bg-gray-800 justify-start relative",
+                  "flex items-center gap-1 cursor-pointer hover:bg-gray-800 justify-start relative py-1",
                   selectedPath &&
                   isPathPointingToItem(child.name, path, selectedPath)
                     ? "bg-indigo-700 hover:bg-indigo-600"
@@ -169,7 +169,7 @@ export const FunctionFolderDisplay = ({
             <div
               key={child.name}
               className={[
-                "flex items-center gap-1 cursor-pointer hover:bg-gray-800 relative",
+                "flex items-center gap-1 cursor-pointer hover:bg-gray-800 relative py-1",
                 selectedPath &&
                 isPathPointingToItem(child.name, path, selectedPath)
                   ? "bg-indigo-700 hover:bg-indigo-600"
