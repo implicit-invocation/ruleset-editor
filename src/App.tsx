@@ -1,7 +1,9 @@
 import { NodeEditor, NodeMap } from "flume";
 import { useCallback, useEffect, useState } from "react";
+import { AiOutlineExpand } from "react-icons/ai";
 import { config } from "./flume-config/config";
 import { NodeRunner } from "./runtime";
+import { IconButton } from "./ui/common/Button";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { Output } from "./ui/panel/Output";
 import { eventEmitter } from "./util/eventEmitter";
@@ -23,6 +25,7 @@ const testRun = async (nodeMap: NodeMap) => {
 };
 
 export const App = () => {
+  const [fullScreen, setFullScreen] = useState(false);
   const [nodeMap, setNodeMap] = useState<NodeMap>(
     JSON.parse(localStorage.getItem("nodeMap") || "{}")
   );
@@ -46,22 +49,34 @@ export const App = () => {
   }, [nodeMap]);
   return (
     <div className="flex-1 flex">
-      <LeftPanel />
+      {!fullScreen && <LeftPanel />}
       <div className="flex-1 flex flex-col justify-center items-center">
-        <NodeEditor
-          nodes={nodeMap}
-          onChange={persistNodeMap}
-          nodeTypes={config.nodeTypes}
-          portTypes={config.portTypes}
-          defaultNodes={[
-            {
-              type: "input",
-              x: -500,
-              y: 0,
-            },
-          ]}
-        />
-        <Output />
+        <div className="flex-1 w-full relative flex flex-col">
+          <div className="absolute top-1 left-1 z-10">
+            <IconButton
+              onClick={() => setFullScreen(!fullScreen)}
+              icon={AiOutlineExpand}
+              className="z-10 text-gray-600 hover:text-gray-500"
+              size="lg"
+            />
+          </div>
+          <div className="flex-1 w-full">
+            <NodeEditor
+              nodes={nodeMap}
+              onChange={persistNodeMap}
+              nodeTypes={config.nodeTypes}
+              portTypes={config.portTypes}
+              defaultNodes={[
+                {
+                  type: "input",
+                  x: -500,
+                  y: 0,
+                },
+              ]}
+            />
+          </div>
+        </div>
+        {!fullScreen && <Output />}
       </div>
     </div>
   );

@@ -316,6 +316,7 @@ export const Functions = () => {
       }
       const result = await folder.requestAdd(addPath, addType);
       if (!result.cancel) {
+        // TODO: check for duplicate
         folder.add(addType, result.name, addPath);
         folder.setSelectedPath([...addPath, result.name]);
       }

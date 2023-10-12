@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Connection, FlumeNode, NodeMap } from "flume";
+import type { Connection, ConnectionMap, FlumeNode, NodeMap } from "flume";
 import jsonata from "jsonata";
 
 export type MaybePromise<T> = T | Promise<T>;
@@ -8,6 +8,10 @@ export type FunctionRegistry = Record<
   string,
   (payload: any) => MaybePromise<any>
 >;
+
+const flattenConnectionMap = (connectionMap: ConnectionMap) => {
+  return Object.values(connectionMap).flat();
+};
 
 // TODO: flume alias and group, number and number operator nodes, read/write data orders
 export const handleNodeRun = async (
@@ -109,7 +113,7 @@ export const handleNodeRun = async (
     if (!func) {
       throw new Error(`No function found with name ${funcName}`);
     }
-    return await func(data?.data);
+    return { output: await func(data?.data) };
   } else if (node.type === "output") {
     const key = data?.key ?? node.inputData?.key?.string;
     outputs[key] = data?.input;
@@ -160,6 +164,20 @@ export class NodeRunner {
   setKVStore(kvStore: KVStore) {
     this.kvStore = kvStore;
   }
+  markDeadBranches(connections: Connection[]) {
+    for (const connection of connections) {
+      const targetNode = this.nodes.find(
+        (node) => node.id === connection.nodeId
+      );
+      if (!targetNode) {
+        throw new Error(`No target node found with id ${connection.nodeId}`);
+      }
+      this.markDeadBranches(
+        flattenConnectionMap(targetNode.connections.outputs)
+      );
+      this.promises.get(targetNode.id)?.resolve(undefined);
+    }
+  }
   async runNode(node: FlumeNode) {
     if (this.started.has(node.id)) {
       return await this.promises.get(node.id)?.promise;
@@ -207,7 +225,7 @@ export class NodeRunner {
       );
     }
     this.promises.get(node.id)?.resolve(result);
-    // TODO: generalize this, use getOutputConnections(node), allow handleNodeRun and getOutputConnections to be overridden
+
     if (node.type === "lazy") {
       return result;
     }
@@ -216,8 +234,10 @@ export class NodeRunner {
       let connections: Connection[];
       if (result === true) {
         connections = outputPorts["true"];
+        this.markDeadBranches(outputPorts["false"]);
       } else {
         connections = outputPorts["false"];
+        this.markDeadBranches(outputPorts["true"]);
       }
       connections = connections || [];
       for (const connection of connections) {
@@ -256,6 +276,7 @@ export class NodeRunner {
     }
     this.inputData = inputData;
     this.runNode(startNode);
+
     await Promise.all(
       this.nodes
         .filter((node) => node.type === "output")

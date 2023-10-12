@@ -26,10 +26,12 @@ export const SimpleButton = ({
 export const IconButton = ({
   icon: Icon,
   attachment: Attachment,
+  size,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon: IconType;
   attachment?: IconType;
+  size?: "sm" | "md" | "lg";
 }) => {
   return (
     <button
@@ -39,7 +41,11 @@ export const IconButton = ({
         props.className || undefined,
       ].join("")}
     >
-      <Icon />
+      <Icon
+        className={
+          size === "sm" ? "w-4 h-4" : size === "lg" ? "w-8 h-8" : "w-6 h-6"
+        }
+      />
       {Attachment && (
         <Attachment className="absolute -bottom-0.5 -right-0.5 w-2 h-2 text-green-500" />
       )}

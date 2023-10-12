@@ -1,9 +1,10 @@
 import { NodeTypeConfig, PortType } from "flume";
+import { createWithLabelNode } from "./withLabel";
 
 export const createTriggerableNode = (
   config: NodeTypeConfig
 ): NodeTypeConfig => {
-  return {
+  return createWithLabelNode({
     ...config,
     inputs: (ports) => (data, connections, ctx) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,5 +43,5 @@ export const createTriggerableNode = (
         ...ownPorts,
       ];
     },
-  };
+  });
 };
