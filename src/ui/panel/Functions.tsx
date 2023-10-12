@@ -1,4 +1,5 @@
 import { Resizable } from "re-resizable";
+import { useCallback } from "react";
 import {
   AiFillDelete,
   AiOutlineDelete,
@@ -13,6 +14,7 @@ import {
   getPathType,
   isExpanded,
   isPathPointingToItem,
+  isSamePath,
   useFolder,
   useFolderContext,
 } from "../../util/folder/context";
@@ -79,9 +81,40 @@ export const FunctionFolderDisplay = ({
     expand,
     collapse,
     deletionConfirm,
+    addPrompt,
   } = useFolderContext();
   return (
     <div className="flex flex-col">
+      {addPrompt &&
+        isSamePath(path, addPrompt.path) &&
+        addPrompt.type === "folder" && (
+          <div
+            className="p-0.5 flex flex-row justify-between items-center gap-1"
+            style={{
+              paddingLeft: `${path.length * 1}rem`,
+            }}
+          >
+            <AiOutlineFolder className="h-4 w-4" />
+            <input
+              autoFocus
+              type="text"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  addPrompt.deferred.resolve({
+                    cancel: true,
+                    name: "",
+                  });
+                } else if (e.key === "Enter") {
+                  addPrompt.deferred.resolve({
+                    cancel: false,
+                    name: e.currentTarget.value,
+                  });
+                }
+              }}
+              className="w-full text-white bg-gray-700 border-none outline-none py-0.5"
+            />
+          </div>
+        )}
       {folder.children.sort(compareFolderNode).map((child) => {
         const childPath = [...path, child.name];
 
@@ -227,12 +260,69 @@ export const FunctionFolderDisplay = ({
           );
         }
       })}
+      {addPrompt &&
+        isSamePath(path, addPrompt.path) &&
+        addPrompt.type === "item" && (
+          <div
+            className="p-0.5 flex flex-row justify-between items-center gap-1"
+            style={{
+              paddingLeft: `${path.length * 1}rem`,
+            }}
+          >
+            <AiOutlineFunction className="h-4 w-4" />
+            <input
+              autoFocus
+              type="text"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  addPrompt.deferred.resolve({
+                    cancel: true,
+                    name: "",
+                  });
+                } else if (e.key === "Enter") {
+                  addPrompt.deferred.resolve({
+                    cancel: false,
+                    name: e.currentTarget.value,
+                  });
+                }
+              }}
+              className="w-full text-white bg-gray-700 border-none outline-none py-0.5"
+            />
+          </div>
+        )}
     </div>
   );
 };
 
 export const Functions = () => {
   const folder = useFolder(DUMMY_FUNCTION_LIST);
+
+  const add = useCallback(
+    async (addType: "item" | "folder") => {
+      if (folder.addPrompt !== undefined) {
+        return;
+      }
+      let type = "folder";
+      if (!folder.selectedPath) {
+        folder.selectedPath = [];
+      } else {
+        type = getPathType(folder.root, folder.selectedPath);
+      }
+      let addPath = folder.selectedPath;
+      if (type === "folder") {
+        folder.expand(folder.selectedPath);
+      } else if (type === "item") {
+        addPath = folder.selectedPath.slice(0, folder.selectedPath.length - 1);
+      }
+      const result = await folder.requestAdd(addPath, addType);
+      if (!result.cancel) {
+        folder.add(addType, result.name, addPath);
+        folder.setSelectedPath([...addPath, result.name]);
+      }
+      folder.cancelAdd();
+    },
+    [folder]
+  );
 
   return (
     <FolderProvider value={folder}>
@@ -247,32 +337,15 @@ export const Functions = () => {
         }}
       >
         <PanelHeader headerTitle="FUNCTIONS">
-          <IconButton icon={AiOutlineFunction} attachment={AiOutlinePlus} />
+          <IconButton
+            icon={AiOutlineFunction}
+            attachment={AiOutlinePlus}
+            onClick={() => add("item")}
+          />
           <IconButton
             icon={AiOutlineFolder}
             attachment={AiOutlinePlus}
-            onClick={() => {
-              let type = "folder";
-              if (!folder.selectedPath) {
-                folder.selectedPath = [];
-              } else {
-                type = getPathType(folder.root, folder.selectedPath);
-              }
-              if (type === "folder") {
-                folder.add(
-                  "folder",
-                  Math.random().toString(),
-                  folder.selectedPath
-                );
-                folder.expand(folder.selectedPath);
-              } else if (type === "item") {
-                folder.add(
-                  "folder",
-                  Math.random().toString(),
-                  folder.selectedPath.slice(0, folder.selectedPath.length - 1)
-                );
-              }
-            }}
+            onClick={() => add("folder")}
           />
           <IconButton
             icon={AiOutlineDelete}
@@ -300,7 +373,7 @@ export const Functions = () => {
         <div
           onClick={() => folder.setSelectedPath(undefined)}
           className={[
-            "flex items-center gap-1 cursor-pointer hover:bg-gray-800 text-sm mx-2",
+            "flex items-center cursor-pointer hover:bg-gray-800 text-sm mx-2 py-1",
             folder.selectedPath === undefined
               ? "bg-indigo-700 hover:bg-indigo-600"
               : undefined,

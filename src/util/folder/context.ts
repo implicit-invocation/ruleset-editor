@@ -8,6 +8,18 @@ export type FolderActionCallback = (
   path: string[]
 ) => Promise<boolean> | boolean;
 
+export const isSamePath = (path1: string[], path2: string[]) => {
+  if (path1.length !== path2.length) {
+    return false;
+  }
+  for (let i = 0; i < path1.length; i++) {
+    if (path1[i] !== path2[i]) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const isPathPointingToItem = (
   name: string,
   parentPath: string[],
@@ -86,6 +98,14 @@ export const useFolder = (
   const [folder, setFolder] = useState<Folder>(initialFolder);
   const [selectedPath, setSelectedPath] = useState<string[] | undefined>();
   const [expandedPaths, setExpandedPaths] = useState<string[][]>([]);
+  const [addPrompt, setAddPrompt] = useState<
+    | {
+        path: string[];
+        deferred: Deferred<{ name: string; cancel: boolean }>;
+        type: "folder" | "item";
+      }
+    | undefined
+  >();
 
   const [deletionConfirm, setDeletionConfirm] = useState<
     | {
@@ -213,6 +233,19 @@ export const useFolder = (
     });
   }, []);
 
+  const requestAdd = useCallback(
+    (path: string[], type: "folder" | "item" = "folder") => {
+      const deferred = new Deferred<{ name: string; cancel: boolean }>();
+      setAddPrompt({ path: path, deferred, type });
+      return deferred.promise;
+    },
+    []
+  );
+
+  const cancelAdd = useCallback(() => {
+    setAddPrompt(undefined);
+  }, []);
+
   return {
     root: folder,
     add,
@@ -225,6 +258,9 @@ export const useFolder = (
     confirmDelete,
     cancelConfirmDelete,
     deletionConfirm,
+    addPrompt,
+    cancelAdd,
+    requestAdd,
   };
 };
 
