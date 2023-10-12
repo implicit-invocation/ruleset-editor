@@ -32,7 +32,12 @@ export const App = () => {
   const [openFile, setOpenFile] = useState<string[] | null>(null);
 
   useEffect(() => {
-    const handler = (path: string[]) => {
+    const handler = (path: string[] | undefined) => {
+      if (path === undefined) {
+        setOpenFile(null);
+        setNodeMap(undefined);
+        return;
+      }
       setOpenFile(path);
       setNodeMap(undefined);
       setTimeout(async () => {

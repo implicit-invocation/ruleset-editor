@@ -356,6 +356,7 @@ export const Functions = () => {
                   folder.selectedPath[folder.selectedPath.length - 1],
                   folder.selectedPath.slice(0, folder.selectedPath.length - 1)
                 );
+                eventEmitter.emit("openFile", undefined);
                 const newPath = folder.selectedPath.slice(0, -1);
                 newPath.length > 0
                   ? folder.setSelectedPath(newPath)
