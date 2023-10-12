@@ -14,6 +14,7 @@ const flattenConnectionMap = (connectionMap: ConnectionMap) => {
 };
 
 // TODO: flume alias and group, number and number operator nodes, read/write data orders
+// TODO: resolve loop, maximum call for each run id
 export const handleNodeRun = async (
   node: FlumeNode,
   data: any,

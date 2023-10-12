@@ -261,6 +261,7 @@ export const useFolder = (
     addPrompt,
     cancelAdd,
     requestAdd,
+    setRoot: setFolder,
   };
 };
 

@@ -1,5 +1,5 @@
 import { Resizable } from "re-resizable";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
   AiFillDelete,
   AiOutlineDelete,
@@ -9,6 +9,7 @@ import {
   AiOutlinePlus,
   AiOutlineRight,
 } from "react-icons/ai";
+import { eventEmitter } from "../../util/eventEmitter";
 import {
   FolderProvider,
   getPathType,
@@ -19,44 +20,9 @@ import {
   useFolderContext,
 } from "../../util/folder/context";
 import { Folder, Item } from "../../util/folder/types";
+import { localFolderAction, readFolder } from "../../util/folderActions";
 import { IconButton } from "../common/Button";
 import { PanelHeader } from "../common/PanelHeader";
-
-const DUMMY_FUNCTION_LIST: Folder = {
-  type: "folder",
-  name: "root",
-  children: [
-    {
-      type: "folder",
-      name: "common",
-      children: [
-        {
-          type: "folder",
-          name: "quest",
-          children: [
-            { type: "item", name: "dispatchQuestComplete" },
-            { type: "item", name: "checkUserQuestLimit" },
-          ],
-        },
-        { type: "item", name: "issueTicket" },
-        {
-          type: "item",
-          name: "aVeryLongFunctionNameThatIsVeryUnrealisticButWhoKnows",
-        },
-      ],
-    },
-    {
-      type: "folder",
-      name: "ticketEvaluation",
-      children: [
-        {
-          type: "item",
-          name: "evaluatePaybillQuestType",
-        },
-      ],
-    },
-  ],
-};
 
 const compareFolderNode = (a: Folder | Item, b: Folder | Item) => {
   if (a.type === "folder" && b.type === "item") {
@@ -295,7 +261,31 @@ export const FunctionFolderDisplay = ({
 };
 
 export const Functions = () => {
-  const folder = useFolder(DUMMY_FUNCTION_LIST);
+  const folder = useFolder(
+    {
+      name: "root",
+      type: "folder",
+      children: [],
+    },
+    localFolderAction
+  );
+
+  const { setRoot, selectedPath, root } = folder;
+
+  useEffect(() => {
+    readFolder().then(setRoot);
+  }, [setRoot]);
+
+  useEffect(() => {
+    if (!selectedPath) {
+      return;
+    }
+    const pathType = getPathType(root, selectedPath);
+
+    if (pathType === "item") {
+      eventEmitter.emit("openFile", selectedPath);
+    }
+  }, [selectedPath, root]);
 
   const add = useCallback(
     async (addType: "item" | "folder") => {
@@ -317,7 +307,7 @@ export const Functions = () => {
       const result = await folder.requestAdd(addPath, addType);
       if (!result.cancel) {
         // TODO: check for duplicate
-        folder.add(addType, result.name, addPath);
+        await folder.add(addType, result.name, addPath);
         folder.setSelectedPath([...addPath, result.name]);
       }
       folder.cancelAdd();
@@ -341,15 +331,18 @@ export const Functions = () => {
           <IconButton
             icon={AiOutlineFunction}
             attachment={AiOutlinePlus}
+            size="sm"
             onClick={() => add("item")}
           />
           <IconButton
             icon={AiOutlineFolder}
             attachment={AiOutlinePlus}
+            size="sm"
             onClick={() => add("folder")}
           />
           <IconButton
             icon={AiOutlineDelete}
+            size="sm"
             onClick={async () => {
               if (!folder.selectedPath) {
                 return;

@@ -1,3 +1,9 @@
 import EventEmitter from "events";
+import TypedEmitter from "typed-emitter";
 
-export const eventEmitter = new EventEmitter();
+type MessageEvents = {
+  Start: () => void;
+  openFile: (path: string[]) => void;
+};
+
+export const eventEmitter = new EventEmitter() as TypedEmitter<MessageEvents>;
