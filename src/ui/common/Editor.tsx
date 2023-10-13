@@ -22,9 +22,7 @@ export const Monaco = ({
   mode?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
-    null
-  );
+  const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(null);
   useEffect(() => {
     if (ref.current) {
       getMonaco().then((monaco) => {

@@ -1,11 +1,6 @@
 import { Resizable } from "re-resizable";
 import { useCallback, useEffect } from "react";
-import {
-  AiOutlineDelete,
-  AiOutlineFolder,
-  AiOutlineFunction,
-  AiOutlinePlus,
-} from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineFolder, AiOutlineFunction, AiOutlinePlus } from "react-icons/ai";
 import { eventEmitter } from "../../util/eventEmitter";
 import { FolderProvider, useFolder } from "../../util/folder/context";
 import { getPathType } from "../../util/folder/util";
@@ -89,18 +84,8 @@ export const Functions = () => {
         }}
       >
         <PanelHeader headerTitle="FUNCTIONS">
-          <IconButton
-            icon={AiOutlineFunction}
-            attachment={AiOutlinePlus}
-            size="sm"
-            onClick={() => add("item")}
-          />
-          <IconButton
-            icon={AiOutlineFolder}
-            attachment={AiOutlinePlus}
-            size="sm"
-            onClick={() => add("folder")}
-          />
+          <IconButton icon={AiOutlineFunction} attachment={AiOutlinePlus} size="sm" onClick={() => add("item")} />
+          <IconButton icon={AiOutlineFolder} attachment={AiOutlinePlus} size="sm" onClick={() => add("folder")} />
           <IconButton
             icon={AiOutlineDelete}
             size="sm"
@@ -119,9 +104,7 @@ export const Functions = () => {
                 );
                 eventEmitter.emit("openFile", undefined);
                 const newPath = folder.selectedPath.slice(0, -1);
-                newPath.length > 0
-                  ? folder.setSelectedPath(newPath)
-                  : folder.setSelectedPath(undefined);
+                newPath.length > 0 ? folder.setSelectedPath(newPath) : folder.setSelectedPath(undefined);
               }
             }}
           />
@@ -130,9 +113,7 @@ export const Functions = () => {
           onClick={() => folder.setSelectedPath(undefined)}
           className={[
             "flex items-center cursor-pointer hover:bg-gray-800 text-sm mx-2 py-1",
-            folder.selectedPath === undefined
-              ? "bg-indigo-700 hover:bg-indigo-600"
-              : undefined,
+            folder.selectedPath === undefined ? "bg-indigo-700 hover:bg-indigo-600" : undefined,
           ].join(" ")}
         >
           Root

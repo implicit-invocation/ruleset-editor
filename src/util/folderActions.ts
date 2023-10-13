@@ -30,20 +30,13 @@ export const readFileData = async (path: string[]): Promise<FunctionData> => {
   return JSON.parse(data);
 };
 
-export const localFolderAction: FolderActionCallback = async (
-  action,
-  type,
-  name,
-  path
-): Promise<boolean> => {
+export const localFolderAction: FolderActionCallback = async (action, type, name, path): Promise<boolean> => {
   const folder = await readFolder();
   if (action === "add") {
     let currentFolder = folder;
     for (let i = 0; i < path.length; i++) {
       const pathItem = path[i];
-      const child = currentFolder.children.find(
-        (child) => child.name === pathItem
-      );
+      const child = currentFolder.children.find((child) => child.name === pathItem);
       if (child === undefined) {
         throw new Error("Path item not found");
       }
@@ -89,9 +82,7 @@ export const localFolderAction: FolderActionCallback = async (
     let currentFolder = folder;
     for (let i = 0; i < path.length; i++) {
       const pathItem = path[i];
-      const child = currentFolder.children.find(
-        (child) => child.name === pathItem
-      );
+      const child = currentFolder.children.find((child) => child.name === pathItem);
       if (child === undefined) {
         throw new Error("Path item not found");
       }
@@ -101,9 +92,7 @@ export const localFolderAction: FolderActionCallback = async (
         throw new Error("Path item is not a folder");
       }
     }
-    const index = currentFolder.children.findIndex(
-      (child) => child.name === name
-    );
+    const index = currentFolder.children.findIndex((child) => child.name === name);
     if (index === -1) {
       throw new Error("Path item not found");
     }

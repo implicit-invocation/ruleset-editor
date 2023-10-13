@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { eventEmitter } from "../eventEmitter";
 import { FunctionData, readFileData, writeFileData } from "../folderActions";
 
@@ -39,15 +33,13 @@ export const useOpenFile = () => {
       setData(data);
       await writeFileData(openFile, data);
     },
-    [openFile]
+    [openFile],
   );
 
   return { openFile, data, saveData };
 };
 
-const OpenFileContext = createContext<
-  ReturnType<typeof useOpenFile> | undefined
->(undefined);
+const OpenFileContext = createContext<ReturnType<typeof useOpenFile> | undefined>(undefined);
 export const OpenFileProvider = OpenFileContext.Provider;
 export const useOpenFileContext = () => {
   const context = useContext(OpenFileContext);

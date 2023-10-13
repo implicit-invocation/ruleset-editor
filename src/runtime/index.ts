@@ -4,10 +4,7 @@ import jsonata from "jsonata";
 
 export type MaybePromise<T> = T | Promise<T>;
 
-export type ExternalFunctionHandler = (
-  name: string,
-  payload: any
-) => MaybePromise<any>;
+export type ExternalFunctionHandler = (name: string, payload: any) => MaybePromise<any>;
 
 const flattenConnectionMap = (connectionMap: ConnectionMap) => {
   return Object.values(connectionMap).flat();
@@ -20,7 +17,7 @@ export const handleNodeRun = async (
   data: any,
   functionHandler: ExternalFunctionHandler,
   kvStore: KVStore,
-  outputs: { [key: string]: any } = {}
+  outputs: { [key: string]: any } = {},
 ) => {
   if (node.type === "lazy") {
     return { output: data.input, string: data.string, boolean: data.boolean };
@@ -107,10 +104,7 @@ export const handleNodeRun = async (
       value: await kvStore.get(data?.key ?? node.inputData?.key?.string),
     };
   } else if (node.type === "writeData") {
-    await kvStore.set(
-      data?.key ?? node.inputData?.key?.string,
-      data?.value ?? node.inputData?.value?.string
-    );
+    await kvStore.set(data?.key ?? node.inputData?.key?.string, data?.value ?? node.inputData?.value?.string);
   } else if (node.type === "call") {
     const funcName = data?.function ?? node.inputData?.function?.string;
     const output = await functionHandler(funcName, data?.data);
@@ -185,15 +179,11 @@ export class NodeRunner {
   markDeadBranches(connections: Connection[]) {
     if (!connections) return;
     for (const connection of connections) {
-      const targetNode = this.nodes.find(
-        (node) => node.id === connection.nodeId
-      );
+      const targetNode = this.nodes.find((node) => node.id === connection.nodeId);
       if (!targetNode) {
         throw new Error(`No target node found with id ${connection.nodeId}`);
       }
-      this.markDeadBranches(
-        flattenConnectionMap(targetNode.connections.outputs)
-      );
+      this.markDeadBranches(flattenConnectionMap(targetNode.connections.outputs));
       this.promises.get(targetNode.id)?.resolve(undefined);
     }
   }
@@ -215,33 +205,23 @@ export class NodeRunner {
             if (connection.portName === "trigger") {
               return;
             }
-            const sourceNode = this.nodes.find(
-              (node) => node.id === connection.nodeId
-            );
+            const sourceNode = this.nodes.find((node) => node.id === connection.nodeId);
             if (!sourceNode) {
-              throw new Error(
-                `No source node found with id ${connection.nodeId}`
-              );
+              throw new Error(`No source node found with id ${connection.nodeId}`);
             }
             const promise = this.runNode(sourceNode).then((result: any) => {
               inputData[portName] = result[connection.portName];
             });
             return promise;
-          })
+          }),
         );
-      })
+      }),
     );
     let result: unknown;
     if (node.type === "input") {
       result = { output: this.inputData };
     } else {
-      result = await handleNodeRun(
-        node,
-        inputData,
-        this.functionHandler,
-        this.kvStore,
-        this.outputs
-      );
+      result = await handleNodeRun(node, inputData, this.functionHandler, this.kvStore, this.outputs);
     }
     this.promises.get(node.id)?.resolve(result);
 
@@ -260,9 +240,7 @@ export class NodeRunner {
       }
       connections = connections || [];
       for (const connection of connections) {
-        const targetNode = this.nodes.find(
-          (node) => node.id === connection.nodeId
-        );
+        const targetNode = this.nodes.find((node) => node.id === connection.nodeId);
         if (!targetNode) {
           throw new Error(`No target node found with id ${connection.nodeId}`);
         }
@@ -273,9 +251,7 @@ export class NodeRunner {
     const outputPorts = Object.values(node.connections.outputs);
     for (const connections of outputPorts) {
       for (const connection of connections) {
-        const targetNode = this.nodes.find(
-          (node) => node.id === connection.nodeId
-        );
+        const targetNode = this.nodes.find((node) => node.id === connection.nodeId);
         if (!targetNode) {
           throw new Error(`No target node found with id ${connection.nodeId}`);
         }
@@ -297,9 +273,7 @@ export class NodeRunner {
     this.runNode(startNode);
 
     await Promise.all(
-      this.nodes
-        .filter((node) => node.type === "output")
-        .map((node) => this.promises.get(node.id)?.promise)
+      this.nodes.filter((node) => node.type === "output").map((node) => this.promises.get(node.id)?.promise),
     );
     return this.outputs;
   }

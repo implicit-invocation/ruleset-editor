@@ -13,5 +13,5 @@ export type FolderActionCallback = (
   action: "add" | "remove",
   type: "item" | "folder",
   name: string,
-  path: string[]
+  path: string[],
 ) => Promise<boolean> | boolean;

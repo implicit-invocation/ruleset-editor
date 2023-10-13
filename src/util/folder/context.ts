@@ -14,10 +14,7 @@ export class Deferred<T> {
   }
 }
 
-export const useFolder = (
-  initialFolder: Folder,
-  folderActionCallback?: FolderActionCallback
-) => {
+export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderActionCallback) => {
   const [folder, setFolder] = useState<Folder>(initialFolder);
   const [selectedPath, setSelectedPath] = useState<string[] | undefined>();
   const [expandedPaths, setExpandedPaths] = useState<string[][]>([]);
@@ -63,9 +60,7 @@ export const useFolder = (
       }
       let currentFolder = folder;
       for (const pathItem of path) {
-        const child = currentFolder.children.find(
-          (child) => child.name === pathItem
-        );
+        const child = currentFolder.children.find((child) => child.name === pathItem);
         if (child === undefined) {
           throw new Error("Path item not found");
         }
@@ -75,14 +70,10 @@ export const useFolder = (
           throw new Error("Path item is not a folder");
         }
       }
-      currentFolder.children.push(
-        type === "item"
-          ? { type: "item", name }
-          : { type: "folder", name, children: [] }
-      );
+      currentFolder.children.push(type === "item" ? { type: "item", name } : { type: "folder", name, children: [] });
       setFolder({ ...folder });
     },
-    [folder, folderActionCallback]
+    [folder, folderActionCallback],
   );
 
   const remove = useCallback(
@@ -101,9 +92,7 @@ export const useFolder = (
       }
       let currentFolder = folder;
       for (const pathItem of path) {
-        const child = currentFolder.children.find(
-          (child) => child.name === pathItem
-        );
+        const child = currentFolder.children.find((child) => child.name === pathItem);
         if (child === undefined) {
           throw new Error("Path item not found");
         }
@@ -113,16 +102,14 @@ export const useFolder = (
           throw new Error("Path item is not a folder");
         }
       }
-      const index = currentFolder.children.findIndex(
-        (child) => child.name === name
-      );
+      const index = currentFolder.children.findIndex((child) => child.name === name);
       if (index === -1) {
         throw new Error("Item not found");
       }
       currentFolder.children.splice(index, 1);
       setFolder({ ...folder });
     },
-    [folder, folderActionCallback]
+    [folder, folderActionCallback],
   );
 
   const expand = useCallback((path: string[]) => {
@@ -156,14 +143,11 @@ export const useFolder = (
     });
   }, []);
 
-  const requestAdd = useCallback(
-    (path: string[], type: "folder" | "item" = "folder") => {
-      const deferred = new Deferred<{ name: string; cancel: boolean }>();
-      setAddPrompt({ path: path, deferred, type });
-      return deferred.promise;
-    },
-    []
-  );
+  const requestAdd = useCallback((path: string[], type: "folder" | "item" = "folder") => {
+    const deferred = new Deferred<{ name: string; cancel: boolean }>();
+    setAddPrompt({ path: path, deferred, type });
+    return deferred.promise;
+  }, []);
 
   const cancelAdd = useCallback(() => {
     setAddPrompt(undefined);
@@ -188,9 +172,7 @@ export const useFolder = (
   };
 };
 
-export const FolderContext = createContext<
-  ReturnType<typeof useFolder> | undefined
->(undefined);
+export const FolderContext = createContext<ReturnType<typeof useFolder> | undefined>(undefined);
 
 export const FolderProvider = FolderContext.Provider;
 export const useFolderContext = () => {

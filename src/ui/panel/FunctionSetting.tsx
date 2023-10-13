@@ -54,11 +54,7 @@ export const FunctionSettings = () => {
               />
             </div>
             <div className="flex-1">
-              <Monaco
-                value={input}
-                onContentChange={setInput}
-                className="w-full h-full"
-              />
+              <Monaco value={input} onContentChange={setInput} className="w-full h-full" />
               {/* <textarea
                 className="w-full h-full outline-none bg-gray-800 text-white p-1"
                 value={input}

@@ -7,18 +7,11 @@ import { IconButton } from "./ui/common/Button";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { Output } from "./ui/panel/Output";
 import { eventEmitter } from "./util/eventEmitter";
-import {
-  OpenFileProvider,
-  useOpenFile,
-  useOpenFileContext,
-} from "./util/file/openFile";
+import { OpenFileProvider, useOpenFile, useOpenFileContext } from "./util/file/openFile";
 import { readFileData } from "./util/folderActions";
 import { LocalStorageKvStore } from "./util/kvStore";
 
-const functionRegistry: Record<
-  string,
-  (payload: unknown) => MaybePromise<unknown>
-> = {
+const functionRegistry: Record<string, (payload: unknown) => MaybePromise<unknown>> = {
   add: async (payload) => {
     const { input1, input2 } = payload as {
       input1: number;
@@ -82,7 +75,7 @@ export const Editor = () => {
       data.graph = nodeMap;
       saveData(data);
     },
-    [openFile, data, saveData]
+    [openFile, data, saveData],
   );
 
   return (

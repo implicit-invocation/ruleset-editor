@@ -3,19 +3,11 @@ import { NodeTypeConfig, PortType, PortTypeBuilder } from "flume";
 export const addPorts = (
   config: NodeTypeConfig,
   additional: {
-    beforeInput?:
-      | PortType
-      | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
-    afterInput?:
-      | PortType
-      | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
-    beforeOutput?:
-      | PortType
-      | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
-    afterOutput?:
-      | PortType
-      | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
-  }
+    beforeInput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
+    afterInput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
+    beforeOutput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
+    afterOutput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
+  },
 ): NodeTypeConfig => {
   let inputs = config.inputs;
   if (additional.beforeInput || additional.afterInput) {

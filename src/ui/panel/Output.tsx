@@ -21,7 +21,7 @@ export const Output = ({ hidden }: { hidden: boolean }) => {
           });
         }, 0);
       },
-      false
+      false,
     );
     return () => {
       Unhook(hookedConsole);

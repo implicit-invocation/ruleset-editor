@@ -21,11 +21,7 @@ export const isSamePath = (path1: string[], path2: string[]) => {
   return true;
 };
 
-export const isPathPointingToItem = (
-  name: string,
-  parentPath: string[],
-  path: string[]
-) => {
+export const isPathPointingToItem = (name: string, parentPath: string[], path: string[]) => {
   if (parentPath.length !== path.length - 1) {
     return false;
   }
@@ -37,16 +33,11 @@ export const isPathPointingToItem = (
   return path[parentPath.length] === name;
 };
 
-export const getPathType = (
-  root: Folder,
-  path: string[]
-): "folder" | "item" | "none" => {
+export const getPathType = (root: Folder, path: string[]): "folder" | "item" | "none" => {
   let currentFolder = root;
   for (let i = 0; i < path.length - 1; i++) {
     const pathItem = path[i];
-    const child = currentFolder.children.find(
-      (child) => child.name === pathItem
-    );
+    const child = currentFolder.children.find((child) => child.name === pathItem);
     if (child === undefined) {
       throw new Error("Path item not found");
     }
@@ -56,9 +47,7 @@ export const getPathType = (
       throw new Error("Path item is not a folder");
     }
   }
-  const target = currentFolder.children.find(
-    (child) => child.name === path[path.length - 1]
-  );
+  const target = currentFolder.children.find((child) => child.name === path[path.length - 1]);
   return target === undefined ? "none" : target.type;
 };
 

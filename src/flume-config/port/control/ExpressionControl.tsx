@@ -3,10 +3,7 @@ import { ControlRenderCallback } from "flume";
 import { Resizable } from "re-resizable";
 import { Monaco } from "../../../ui/common/Editor";
 
-export const createExpressionControl: ControlRenderCallback = (
-  data,
-  onChange
-) => {
+export const createExpressionControl: ControlRenderCallback = (data, onChange) => {
   return (
     <Resizable
       defaultSize={{
@@ -20,11 +17,7 @@ export const createExpressionControl: ControlRenderCallback = (
       // @ts-ignore
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <Monaco
-        value={data}
-        className="w-full h-full"
-        onContentChange={onChange}
-      />
+      <Monaco value={data} className="w-full h-full" onContentChange={onChange} />
     </Resizable>
   );
 };

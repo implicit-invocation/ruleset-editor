@@ -14,6 +14,6 @@ export const registerMiscNodes = (config: FlumeConfig) => {
         ports.string({ name: "message", label: "Message" }),
         ports.boolean({ name: "boolean", label: "Boolean" }),
       ],
-    })
+    }),
   );
 };

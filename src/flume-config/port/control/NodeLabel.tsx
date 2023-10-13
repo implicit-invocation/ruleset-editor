@@ -2,10 +2,7 @@
 import { ControlRenderCallback } from "flume";
 import { useState } from "react";
 
-export const createNodeLabelControl: ControlRenderCallback = (
-  data,
-  onChange
-) => {
+export const createNodeLabelControl: ControlRenderCallback = (data, onChange) => {
   const [editing, setEditing] = useState(false);
   const [previous, setPrevious] = useState(data);
 
@@ -40,9 +37,7 @@ export const createNodeLabelControl: ControlRenderCallback = (
           onChange={(e) => onChange(e.target.value)}
         />
       )}
-      <div className="text-sm italic text-gray-800">
-        {editing ? "Press Enter to confirm" : "Click to modify"}
-      </div>
+      <div className="text-sm italic text-gray-800">{editing ? "Press Enter to confirm" : "Click to modify"}</div>
     </div>
   );
 };

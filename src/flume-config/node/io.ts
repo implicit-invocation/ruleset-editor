@@ -37,8 +37,7 @@ export const registerIONodes = (config: FlumeConfig) => {
     sortIndex: 2,
     type: "lazy",
     label: "IO: Lazy",
-    description:
-      "Lazy node, doesn't trigger the next node until it's required by a running node",
+    description: "Lazy node, doesn't trigger the next node until it's required by a running node",
     initialWidth: 200,
     inputs: (ports) => [
       ports.object({ name: "input", label: "Object" }),
@@ -58,9 +57,7 @@ export const registerIONodes = (config: FlumeConfig) => {
     label: "IO: Branch",
     description: "Accept a boolean and branch the flow",
     initialWidth: 200,
-    inputs: (ports) => [
-      ports.boolean({ name: "condition", label: "Condition" }),
-    ],
+    inputs: (ports) => [ports.boolean({ name: "condition", label: "Condition" })],
     outputs: (ports) => [
       ports.trigger({ name: "true", label: "Trigger when true" }),
       ports.trigger({ name: "false", label: "Trigger when false" }),
@@ -80,6 +77,6 @@ export const registerIONodes = (config: FlumeConfig) => {
         ports.string({ name: "function", label: "Function" }),
       ],
       outputs: (ports) => [ports.object({ name: "output", label: "Result" })],
-    })
+    }),
   );
 };

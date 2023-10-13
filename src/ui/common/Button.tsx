@@ -36,19 +36,10 @@ export const IconButton = ({
   return (
     <button
       {...props}
-      className={[
-        "relative hover:bg-gray-800 p-0.5 rounded-md",
-        props.className || undefined,
-      ].join("")}
+      className={["relative hover:bg-gray-800 p-0.5 rounded-md", props.className || undefined].join("")}
     >
-      <Icon
-        className={
-          size === "sm" ? "w-4 h-4" : size === "lg" ? "w-8 h-8" : "w-6 h-6"
-        }
-      />
-      {Attachment && (
-        <Attachment className="absolute -bottom-0.5 -right-0.5 w-2 h-2 text-green-500" />
-      )}
+      <Icon className={size === "sm" ? "w-4 h-4" : size === "lg" ? "w-8 h-8" : "w-6 h-6"} />
+      {Attachment && <Attachment className="absolute -bottom-0.5 -right-0.5 w-2 h-2 text-green-500" />}
     </button>
   );
 };

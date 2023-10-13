@@ -1,10 +1,7 @@
 import { ControlRenderCallback } from "flume";
 import { useState } from "react";
 
-export const createMultivarControl: ControlRenderCallback = (
-  data,
-  onChange
-) => {
+export const createMultivarControl: ControlRenderCallback = (data, onChange) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [value, setValue] = useState("");
   return (
@@ -25,9 +22,7 @@ export const createMultivarControl: ControlRenderCallback = (
           onChange={(e) => setValue(e.target.value)}
           className="rounded-lg p-0.5 px-1 flex-1 text-gray-800"
         />
-        <button className="bg-gray-800 text-gray-200 p-2 rounded-lg">
-          Add input
-        </button>
+        <button className="bg-gray-800 text-gray-200 p-2 rounded-lg">Add input</button>
       </form>
       <div className="flex flex-row gap-0.5 py-1 flex-wrap">
         {data.map((variable: string) => (
