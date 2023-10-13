@@ -74,9 +74,9 @@ export const registerIONodes = (config: FlumeConfig) => {
       inputs: (ports) => [
         ports.object({ name: "array", label: "Array" }),
         ports.object({ name: "context", label: "Context" }),
-        ports.string({ name: "function", label: "Function" }),
+        ports.function({ name: "function", label: "Function" }),
       ],
       outputs: (ports) => [ports.object({ name: "output", label: "Result" })],
-    }),
+    })
   );
 };

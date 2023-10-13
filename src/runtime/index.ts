@@ -17,7 +17,7 @@ export const handleNodeRun = async (
   data: any,
   functionHandler: ExternalFunctionHandler,
   kvStore: KVStore,
-  outputs: { [key: string]: any } = {},
+  outputs: { [key: string]: any } = {}
 ) => {
   if (node.type === "lazy") {
     return { output: data.input, string: data.string, boolean: data.boolean };
@@ -106,14 +106,14 @@ export const handleNodeRun = async (
   } else if (node.type === "writeData") {
     await kvStore.set(data?.key ?? node.inputData?.key?.string, data?.value ?? node.inputData?.value?.string);
   } else if (node.type === "call") {
-    const funcName = data?.function ?? node.inputData?.function?.string;
+    const funcName = node.inputData.function.function;
     const output = await functionHandler(funcName, data?.data);
     return { output };
   } else if (node.type === "output") {
     const key = data?.key ?? node.inputData?.key?.string;
     outputs[key] = data?.input;
   } else if (node.type === "loop") {
-    const funcName = data?.function ?? node.inputData?.function?.string;
+    const funcName = node.inputData.function.function;
     const array = data?.array;
     if (!Array.isArray(array)) {
       throw new Error("Input is not an array");
@@ -213,9 +213,9 @@ export class NodeRunner {
               inputData[portName] = result[connection.portName];
             });
             return promise;
-          }),
+          })
         );
-      }),
+      })
     );
     let result: unknown;
     if (node.type === "input") {
@@ -273,7 +273,7 @@ export class NodeRunner {
     this.runNode(startNode);
 
     await Promise.all(
-      this.nodes.filter((node) => node.type === "output").map((node) => this.promises.get(node.id)?.promise),
+      this.nodes.filter((node) => node.type === "output").map((node) => this.promises.get(node.id)?.promise)
     );
     return this.outputs;
   }
