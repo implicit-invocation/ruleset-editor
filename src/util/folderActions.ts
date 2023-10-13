@@ -1,6 +1,5 @@
 import { NodeMap } from "flume";
-import { FolderActionCallback } from "./folder/context";
-import { Folder } from "./folder/types";
+import { Folder, FolderActionCallback } from "./folder/types";
 
 export type FunctionData = {
   name: string;

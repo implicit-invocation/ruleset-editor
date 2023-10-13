@@ -1,264 +1,18 @@
 import { Resizable } from "re-resizable";
 import { useCallback, useEffect } from "react";
 import {
-  AiFillDelete,
   AiOutlineDelete,
-  AiOutlineDown,
   AiOutlineFolder,
   AiOutlineFunction,
   AiOutlinePlus,
-  AiOutlineRight,
 } from "react-icons/ai";
 import { eventEmitter } from "../../util/eventEmitter";
-import {
-  FolderProvider,
-  getPathType,
-  isExpanded,
-  isPathPointingToItem,
-  isSamePath,
-  useFolder,
-  useFolderContext,
-} from "../../util/folder/context";
-import { Folder, Item } from "../../util/folder/types";
+import { FolderProvider, useFolder } from "../../util/folder/context";
+import { getPathType } from "../../util/folder/util";
 import { localFolderAction, readFolder } from "../../util/folderActions";
 import { IconButton } from "../common/Button";
 import { PanelHeader } from "../common/PanelHeader";
-
-const compareFolderNode = (a: Folder | Item, b: Folder | Item) => {
-  if (a.type === "folder" && b.type === "item") {
-    return -1;
-  } else if (a.type === "item" && b.type === "folder") {
-    return 1;
-  }
-  return a.name.localeCompare(b.name);
-};
-
-export const FunctionFolderDisplay = ({
-  folder,
-  path,
-}: {
-  folder: Folder;
-  path: string[];
-}) => {
-  const {
-    setSelectedPath,
-    selectedPath,
-    expanded,
-    expand,
-    collapse,
-    deletionConfirm,
-    addPrompt,
-  } = useFolderContext();
-  return (
-    <div className="flex flex-col">
-      {addPrompt &&
-        isSamePath(path, addPrompt.path) &&
-        addPrompt.type === "folder" && (
-          <div
-            className="p-0.5 flex flex-row justify-between items-center gap-1"
-            style={{
-              paddingLeft: `${path.length * 1}rem`,
-            }}
-          >
-            <AiOutlineFolder className="h-4 w-4" />
-            <input
-              autoFocus
-              type="text"
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  addPrompt.deferred.resolve({
-                    cancel: true,
-                    name: "",
-                  });
-                } else if (e.key === "Enter") {
-                  addPrompt.deferred.resolve({
-                    cancel: false,
-                    name: e.currentTarget.value,
-                  });
-                }
-              }}
-              className="w-full text-white bg-gray-700 border-none outline-none py-0.5"
-            />
-          </div>
-        )}
-      {folder.children.sort(compareFolderNode).map((child) => {
-        const childPath = [...path, child.name];
-
-        if (child.type === "folder") {
-          return (
-            <div key={child.name} className="flex flex-col">
-              <div
-                className={[
-                  "flex items-center gap-1 cursor-pointer hover:bg-gray-800 justify-start relative py-1",
-                  selectedPath &&
-                  isPathPointingToItem(child.name, path, selectedPath)
-                    ? "bg-indigo-700 hover:bg-indigo-600"
-                    : undefined,
-                ].join(" ")}
-                style={{
-                  paddingLeft: `${path.length * 1}rem`,
-                }}
-                onClick={() => {
-                  if (!isExpanded(expanded, childPath)) {
-                    expand(childPath);
-                  } else {
-                    collapse(childPath);
-                  }
-                  setSelectedPath(childPath);
-                }}
-              >
-                {isExpanded(expanded, childPath) ? (
-                  <AiOutlineDown />
-                ) : (
-                  <AiOutlineRight />
-                )}
-
-                <div>{child.name}</div>
-
-                {deletionConfirm &&
-                  isPathPointingToItem(
-                    child.name,
-                    path,
-                    deletionConfirm.path
-                  ) && (
-                    <div
-                      className="h-full w-full absolute flex flex-row justify-end items-center gap-2 px-2 text-xs bg-white/25"
-                      style={{
-                        marginLeft: `-${path.length * 1}rem`,
-                      }}
-                    >
-                      <AiFillDelete className="h-4 w-4 text-red-400" />
-                      <button
-                        className="cursor-pointer bg-red-500 px-2 rounded-md w-12 shadow-md"
-                        onClick={() => {
-                          deletionConfirm.deferred.resolve({
-                            result: true,
-                            silent: false,
-                          });
-                        }}
-                      >
-                        Yes
-                      </button>
-                      <button
-                        className="cursor-pointer bg-gray-800 px-2 rounded-md w-12 shadow-md"
-                        onClick={() => {
-                          deletionConfirm.deferred.resolve({
-                            result: false,
-                            silent: false,
-                          });
-                        }}
-                      >
-                        No
-                      </button>
-                    </div>
-                  )}
-              </div>
-              {isExpanded(expanded, childPath) && (
-                <div>
-                  <FunctionFolderDisplay
-                    folder={child}
-                    path={[...path, child.name]}
-                  />
-                </div>
-              )}
-            </div>
-          );
-        } else {
-          return (
-            <div
-              key={child.name}
-              className={[
-                "flex items-center gap-1 cursor-pointer hover:bg-gray-800 relative py-1",
-                selectedPath &&
-                isPathPointingToItem(child.name, path, selectedPath)
-                  ? "bg-indigo-700 hover:bg-indigo-600"
-                  : undefined,
-              ].join(" ")}
-              style={{
-                paddingLeft: `${path.length * 1}rem`,
-              }}
-              onClick={() => {
-                setSelectedPath([...path, child.name]);
-              }}
-            >
-              <AiOutlineFunction className="h-4 w-4" />
-              <div className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
-                {child.name}
-              </div>
-              {deletionConfirm &&
-                isPathPointingToItem(
-                  child.name,
-                  path,
-                  deletionConfirm.path
-                ) && (
-                  <div
-                    className="h-full w-full absolute flex flex-row justify-end items-center gap-2 px-2 text-xs bg-white/25"
-                    style={{
-                      marginLeft: `-${path.length * 1}rem`,
-                    }}
-                  >
-                    <AiFillDelete className="h-4 w-4 text-red-400" />
-                    <button
-                      className="cursor-pointer bg-red-500 px-2 rounded-md w-12 shadow-md"
-                      onClick={() => {
-                        deletionConfirm.deferred.resolve({
-                          result: true,
-                          silent: false,
-                        });
-                      }}
-                    >
-                      Yes
-                    </button>
-                    <button
-                      className="cursor-pointer bg-gray-800 px-2 rounded-md w-12 shadow-md"
-                      onClick={() => {
-                        deletionConfirm.deferred.resolve({
-                          result: false,
-                          silent: false,
-                        });
-                      }}
-                    >
-                      No
-                    </button>
-                  </div>
-                )}
-            </div>
-          );
-        }
-      })}
-      {addPrompt &&
-        isSamePath(path, addPrompt.path) &&
-        addPrompt.type === "item" && (
-          <div
-            className="p-0.5 flex flex-row justify-between items-center gap-1"
-            style={{
-              paddingLeft: `${path.length * 1}rem`,
-            }}
-          >
-            <AiOutlineFunction className="h-4 w-4" />
-            <input
-              autoFocus
-              type="text"
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  addPrompt.deferred.resolve({
-                    cancel: true,
-                    name: "",
-                  });
-                } else if (e.key === "Enter") {
-                  addPrompt.deferred.resolve({
-                    cancel: false,
-                    name: e.currentTarget.value,
-                  });
-                }
-              }}
-              className="w-full text-white bg-gray-700 border-none outline-none py-0.5"
-            />
-          </div>
-        )}
-    </div>
-  );
-};
+import { FunctionFolderDisplay } from "./FunctionFolderDisplay";
 
 export const Functions = () => {
   const folder = useFolder(
@@ -305,12 +59,19 @@ export const Functions = () => {
         addPath = folder.selectedPath.slice(0, folder.selectedPath.length - 1);
       }
       const result = await folder.requestAdd(addPath, addType);
-      if (!result.cancel) {
-        // TODO: check for duplicate
+      if (result.cancel) {
+        folder.cancelAdd();
+      }
+      const newPath = [...addPath, result.name];
+      const available = getPathType(folder.root, newPath) === "none";
+      if (available) {
         await folder.add(addType, result.name, addPath);
         folder.setSelectedPath([...addPath, result.name]);
+        folder.cancelAdd();
+      } else {
+        alert("Name already exists");
+        folder.cancelAdd();
       }
-      folder.cancelAdd();
     },
     [folder]
   );
