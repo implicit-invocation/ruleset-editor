@@ -4,10 +4,10 @@ import jsonata from "jsonata";
 
 export type MaybePromise<T> = T | Promise<T>;
 
-export type FunctionRegistry = Record<
-  string,
-  (payload: any) => MaybePromise<any>
->;
+export type ExternalFunctionHandler = (
+  name: string,
+  payload: any
+) => MaybePromise<any>;
 
 const flattenConnectionMap = (connectionMap: ConnectionMap) => {
   return Object.values(connectionMap).flat();
@@ -18,7 +18,7 @@ const flattenConnectionMap = (connectionMap: ConnectionMap) => {
 export const handleNodeRun = async (
   node: FlumeNode,
   data: any,
-  functions: FunctionRegistry,
+  functionHandler: ExternalFunctionHandler,
   kvStore: KVStore,
   outputs: { [key: string]: any } = {}
 ) => {
@@ -110,11 +110,8 @@ export const handleNodeRun = async (
     );
   } else if (node.type === "call") {
     const funcName = data?.function ?? node.inputData?.function?.string;
-    const func = functions[funcName];
-    if (!func) {
-      throw new Error(`No function found with name ${funcName}`);
-    }
-    return { output: await func(data?.data) };
+    const output = await functionHandler(funcName, data?.data);
+    return { output };
   } else if (node.type === "output") {
     const key = data?.key ?? node.inputData?.key?.string;
     outputs[key] = data?.input;
@@ -156,10 +153,10 @@ export class NodeRunner {
   promises = new Map<string, Deferred<unknown>>();
   started = new Map<string, boolean>();
   inputData: any;
-  functionRegistry: FunctionRegistry = {};
+  functionHandler: ExternalFunctionHandler = () => {};
   outputs: { [key: string]: any } = {};
-  setFunctionRegistry(functionRegistry: FunctionRegistry) {
-    this.functionRegistry = functionRegistry;
+  setFunctionHandler(functionHandler: ExternalFunctionHandler) {
+    this.functionHandler = functionHandler;
   }
   kvStore: KVStore = createMemoryKVStore();
   setKVStore(kvStore: KVStore) {
@@ -221,7 +218,7 @@ export class NodeRunner {
       result = await handleNodeRun(
         node,
         inputData,
-        this.functionRegistry,
+        this.functionHandler,
         this.kvStore,
         this.outputs
       );

@@ -19,6 +19,7 @@ const testRun = async (nodeMap: NodeMap, data: unknown) => {
   console.log("Start running with data: ", data);
   const runner = new NodeRunner();
   runner.setKVStore(LocalStorageKvStore);
+  runner.setFunctionHandler((name, payload) => console.log(name, payload));
   const result = await runner.run(nodeMap, data);
   console.log("Got the result: ", result);
   console.log("==============================================");
