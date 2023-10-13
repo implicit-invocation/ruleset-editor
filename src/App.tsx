@@ -10,19 +10,14 @@ import { eventEmitter } from "./util/eventEmitter";
 import { readFileData, writeFileData } from "./util/folderActions";
 import { LocalStorageKvStore } from "./util/kvStore";
 
-const testRun = async (nodeMap: NodeMap) => {
+const testRun = async (nodeMap: NodeMap, data: unknown) => {
   console.log("==============================================");
-  console.log("try to run");
+  console.log("Start running with data: ", data);
   const runner = new NodeRunner();
   runner.setKVStore(LocalStorageKvStore);
-  const result = await runner.run(nodeMap, {
-    type: "payBill",
-    payload: {
-      cif: "12341234123",
-      amount: 1000,
-    },
-  });
-  console.log(JSON.stringify(result, null, 2));
+  const result = await runner.run(nodeMap, data);
+  console.log("Got the result: ", result);
+  console.log("==============================================");
 };
 
 export const App = () => {
@@ -55,8 +50,8 @@ export const App = () => {
     if (!nodeMap) {
       return;
     }
-    const handler = () => {
-      testRun(nodeMap!);
+    const handler = (data: unknown) => {
+      testRun(nodeMap!, data);
     };
     eventEmitter.on("Start", handler);
     return () => {

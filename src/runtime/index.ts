@@ -166,6 +166,7 @@ export class NodeRunner {
     this.kvStore = kvStore;
   }
   markDeadBranches(connections: Connection[]) {
+    if (!connections) return;
     for (const connection of connections) {
       const targetNode = this.nodes.find(
         (node) => node.id === connection.nodeId

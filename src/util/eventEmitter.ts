@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 
 type MessageEvents = {
-  Start: () => void;
+  Start: (input: unknown) => void;
   openFile: (path: string[] | undefined) => void;
 };
 
