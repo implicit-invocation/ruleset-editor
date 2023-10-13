@@ -1,5 +1,5 @@
 import { NodeEditor, NodeMap } from "flume";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AiOutlineExpand } from "react-icons/ai";
 import { config } from "./flume-config/config";
 import { NodeRunner } from "./runtime";
@@ -7,7 +7,11 @@ import { IconButton } from "./ui/common/Button";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { Output } from "./ui/panel/Output";
 import { eventEmitter } from "./util/eventEmitter";
-import { readFileData, writeFileData } from "./util/folderActions";
+import {
+  OpenFileProvider,
+  useOpenFile,
+  useOpenFileContext,
+} from "./util/file/openFile";
 import { LocalStorageKvStore } from "./util/kvStore";
 
 const testRun = async (nodeMap: NodeMap, data: unknown) => {
@@ -20,60 +24,38 @@ const testRun = async (nodeMap: NodeMap, data: unknown) => {
   console.log("==============================================");
 };
 
-export const App = () => {
+export const Editor = () => {
   const [fullScreen, setFullScreen] = useState(false);
-  const [nodeMap, setNodeMap] = useState<NodeMap | undefined>();
 
-  const [openFile, setOpenFile] = useState<string[] | null>(null);
-
-  useEffect(() => {
-    const handler = (path: string[] | undefined) => {
-      if (path === undefined) {
-        setOpenFile(null);
-        setNodeMap(undefined);
-        return;
-      }
-      setOpenFile(path);
-      setNodeMap(undefined);
-      setTimeout(async () => {
-        const data = await readFileData(path);
-        setNodeMap(data.graph);
-      }, 0);
-    };
-    eventEmitter.on("openFile", handler);
-    return () => {
-      eventEmitter.off("openFile", handler);
-    };
-  }, []);
+  const { openFile, data, saveData } = useOpenFileContext();
 
   useEffect(() => {
-    if (!nodeMap) {
+    if (!data) {
       return;
     }
-    const handler = (data: unknown) => {
-      testRun(nodeMap!, data);
+    const handler = (testData: unknown) => {
+      testRun(data.graph, testData);
     };
     eventEmitter.on("Start", handler);
     return () => {
       eventEmitter.off("Start", handler);
     };
-  }, [nodeMap]);
+  }, [data]);
 
-  useEffect(() => {
-    if (!nodeMap || !openFile) {
-      return;
-    }
-    const handler = async () => {
-      const data = await readFileData(openFile);
+  const persistNodeMap = useCallback(
+    (nodeMap: NodeMap) => {
+      if (!openFile || !data) {
+        return;
+      }
       data.graph = nodeMap;
-      await writeFileData(openFile, data);
-    };
-    handler();
-  }, [nodeMap, openFile]);
+      saveData(data);
+    },
+    [openFile, data, saveData]
+  );
 
   return (
     <div className="flex-1 flex">
-      {!fullScreen && <LeftPanel />}
+      <LeftPanel hidden={fullScreen} />
       <div className="flex-1 flex flex-col justify-center items-center">
         <div className="flex-1 w-full relative flex flex-col">
           <div className="absolute top-1 left-1 z-10">
@@ -85,10 +67,10 @@ export const App = () => {
             />
           </div>
           <div className="flex-1 w-full bg-gray-900">
-            {openFile && nodeMap && (
+            {openFile && data && (
               <NodeEditor
-                nodes={nodeMap}
-                onChange={setNodeMap}
+                nodes={data.graph}
+                onChange={persistNodeMap}
                 nodeTypes={config.nodeTypes}
                 portTypes={config.portTypes}
                 defaultNodes={[
@@ -102,8 +84,17 @@ export const App = () => {
             )}
           </div>
         </div>
-        {!fullScreen && <Output />}
+        <Output hidden={fullScreen} />
       </div>
     </div>
+  );
+};
+
+export const App = () => {
+  const openFileHandler = useOpenFile();
+  return (
+    <OpenFileProvider value={openFileHandler}>
+      <Editor />
+    </OpenFileProvider>
   );
 };

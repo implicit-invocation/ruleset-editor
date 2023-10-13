@@ -4,7 +4,7 @@ import { Resizable } from "re-resizable";
 import { useEffect, useRef, useState } from "react";
 import { PanelHeader } from "../common/PanelHeader";
 
-export const Output = () => {
+export const Output = ({ hidden }: { hidden: boolean }) => {
   const [logs, setLogs] = useState<any[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,6 +31,9 @@ export const Output = () => {
   return (
     <Resizable
       className="border-t-2 border-gray-800 shadow-lg bg-gray-900 text-gray-300 flex flex-col"
+      style={{
+        display: hidden ? "none" : "flex",
+      }}
       enable={{
         top: true,
       }}
