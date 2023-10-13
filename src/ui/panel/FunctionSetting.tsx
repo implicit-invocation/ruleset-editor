@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { eventEmitter } from "../../util/eventEmitter";
 import { readFileData, writeFileData } from "../../util/folderActions";
 import { SimpleButton } from "../common/Button";
+import { Monaco } from "../common/Editor";
 import { PanelHeader } from "../common/PanelHeader";
 
 export const FunctionSettings = () => {
@@ -53,11 +54,16 @@ export const FunctionSettings = () => {
               />
             </div>
             <div className="flex-1">
-              <textarea
+              <Monaco
+                value={input}
+                onContentChange={setInput}
+                className="w-full h-full"
+              />
+              {/* <textarea
                 className="w-full h-full outline-none bg-gray-800 text-white p-1"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-              />
+              /> */}
             </div>
           </div>
         )}

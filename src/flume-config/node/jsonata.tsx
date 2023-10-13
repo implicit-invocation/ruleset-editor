@@ -16,7 +16,7 @@ export const registerJsonataNode = (config: FlumeConfig) => {
           ...(data?.multivar?.variables || []).map((variable: string) =>
             ports.object({ name: variable, label: variable })
           ),
-          ports.string({
+          ports.expression({
             name: "expression",
             label: "Expression (JSONata):",
             hidePort: true,
@@ -41,7 +41,7 @@ export const registerJsonataNode = (config: FlumeConfig) => {
           ...(data?.multivar?.variables || []).map((variable: string) =>
             ports.object({ name: variable, label: variable })
           ),
-          ports.string({
+          ports.expression({
             name: "expression",
             label: "Expression (JSONata):",
             hidePort: true,
@@ -66,7 +66,7 @@ export const registerJsonataNode = (config: FlumeConfig) => {
           ...(data?.multivar?.variables || []).map((variable: string) =>
             ports.object({ name: variable, label: variable })
           ),
-          ports.string({
+          ports.expression({
             name: "expression",
             label: "Expression (JSONata):",
             hidePort: true,

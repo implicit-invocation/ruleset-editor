@@ -7,7 +7,6 @@ export const registerIONodes = (config: FlumeConfig) => {
     label: "IO: Input",
     description: "Input data",
     initialWidth: 200,
-    inputs: (ports) => [ports.startButton({})],
     outputs: (ports) => [
       ports.object({
         name: "output",

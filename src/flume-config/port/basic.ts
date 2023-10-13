@@ -1,4 +1,5 @@
 import { Colors, Controls, FlumeConfig } from "flume";
+import { createExpressionControl } from "./control/ExpressionControl";
 
 export const registerBasicPort = (config: FlumeConfig) => {
   config.addPortType({
@@ -21,6 +22,20 @@ export const registerBasicPort = (config: FlumeConfig) => {
       Controls.text({
         name: "string",
         label: "Text",
+      }),
+    ],
+  });
+  config.addPortType({
+    type: "expression",
+    name: "expression",
+    label: "Expression",
+    hidePort: true,
+    controls: [
+      Controls.custom({
+        name: "expression",
+        label: "Expression (JSONata)",
+        defaultValue: "",
+        render: createExpressionControl,
       }),
     ],
   });
