@@ -37,16 +37,19 @@ export const Monaco = ({
               enabled: false,
             },
           });
-          editor.onDidChangeModelContent(() => {
-            if (onContentChange) {
-              onContentChange(editor.getValue());
-            }
-          });
           setEditor(editor);
         }
       });
     }
-  }, [onContentChange]);
+  }, []);
+
+  useEffect(() => {
+    if (editor && onContentChange) {
+      editor.onDidChangeModelContent(() => {
+        onContentChange(editor.getValue());
+      });
+    }
+  }, [onContentChange, editor]);
 
   useEffect(() => {
     if (editor && value) {

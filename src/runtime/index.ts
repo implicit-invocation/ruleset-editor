@@ -37,8 +37,11 @@ export const handleNodeRun = async (
       },
       { type: "object", value: data?.data ?? node.inputData?.data?.object },
     ]);
+    if (data?.data) {
+      console.log(JSON.stringify(data.data, null, 2));
+    }
   } else if (node.type === "condition") {
-    const expression = node.inputData?.expression?.string;
+    const expression = node.inputData?.expression?.expression;
     if (!expression) {
       return {
         valid: false,
@@ -49,7 +52,7 @@ export const handleNodeRun = async (
       valid: evaluationResult == true,
     };
   } else if (node.type === "stringTransform") {
-    const expression = node.inputData?.expression?.string;
+    const expression = node.inputData?.expression?.expression;
     if (!expression) {
       return {
         string: data,
@@ -60,7 +63,7 @@ export const handleNodeRun = async (
       string: evaluationResult,
     };
   } else if (node.type === "transform") {
-    const expression = node.inputData?.expression?.string;
+    const expression = node.inputData?.expression?.expression;
     if (!expression) {
       return {
         output: data,
@@ -115,6 +118,23 @@ export const handleNodeRun = async (
   } else if (node.type === "output") {
     const key = data?.key ?? node.inputData?.key?.string;
     outputs[key] = data?.input;
+  } else if (node.type === "loop") {
+    const funcName = data?.function ?? node.inputData?.function?.string;
+    const array = data?.array;
+    if (!Array.isArray(array)) {
+      throw new Error("Input is not an array");
+    }
+    const context = data?.context;
+    // TODO: parallel, sequential, limit
+    const output: any[] = [];
+    for (const item of array) {
+      const iterationOutput = await functionHandler(funcName, {
+        context,
+        item,
+      });
+      output.push(iterationOutput);
+    }
+    return { output };
   }
 };
 

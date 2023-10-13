@@ -1,4 +1,5 @@
 import { FlumeConfig } from "flume";
+import { createTriggerableNode } from "./triggerable";
 
 export const registerIONodes = (config: FlumeConfig) => {
   config.addNodeType({
@@ -65,4 +66,20 @@ export const registerIONodes = (config: FlumeConfig) => {
       ports.trigger({ name: "false", label: "Trigger when false" }),
     ],
   });
+
+  config.addNodeType(
+    createTriggerableNode({
+      sortIndex: 3.5,
+      type: "loop",
+      label: "IO: Loop",
+      description: "Loop over an array",
+      initialWidth: 200,
+      inputs: (ports) => [
+        ports.object({ name: "array", label: "Array" }),
+        ports.object({ name: "context", label: "Context" }),
+        ports.string({ name: "function", label: "Function" }),
+      ],
+      outputs: (ports) => [ports.object({ name: "output", label: "Result" })],
+    })
+  );
 };

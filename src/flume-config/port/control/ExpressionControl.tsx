@@ -20,7 +20,11 @@ export const createExpressionControl: ControlRenderCallback = (
       // @ts-ignore
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <Monaco value={data} onChange={onChange} className="w-full h-full" />
+      <Monaco
+        value={data}
+        className="w-full h-full"
+        onContentChange={onChange}
+      />
     </Resizable>
   );
 };

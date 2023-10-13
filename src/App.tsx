@@ -2,7 +2,7 @@ import { NodeEditor, NodeMap } from "flume";
 import { useCallback, useEffect, useState } from "react";
 import { AiOutlineExpand } from "react-icons/ai";
 import { config } from "./flume-config/config";
-import { NodeRunner } from "./runtime";
+import { MaybePromise, NodeRunner } from "./runtime";
 import { IconButton } from "./ui/common/Button";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { Output } from "./ui/panel/Output";
@@ -12,14 +12,45 @@ import {
   useOpenFile,
   useOpenFileContext,
 } from "./util/file/openFile";
+import { readFileData } from "./util/folderActions";
 import { LocalStorageKvStore } from "./util/kvStore";
+
+const functionRegistry: Record<
+  string,
+  (payload: unknown) => MaybePromise<unknown>
+> = {
+  add: async (payload) => {
+    const { input1, input2 } = payload as {
+      input1: number;
+      input2: number;
+    };
+    return {
+      result: input1 + input2,
+    };
+  },
+};
+
+const runBuildInFunction = async (name: string, payload: unknown) => {
+  const fn = functionRegistry[name];
+  if (!fn) {
+    throw new Error(`Function ${name} not found`);
+  }
+  return await fn(payload);
+};
 
 const testRun = async (nodeMap: NodeMap, data: unknown) => {
   console.log("==============================================");
   console.log("Start running with data: ", data);
   const runner = new NodeRunner();
   runner.setKVStore(LocalStorageKvStore);
-  runner.setFunctionHandler((name, payload) => console.log(name, payload));
+  runner.setFunctionHandler(async (name, payload) => {
+    if (name.startsWith("builtin:")) {
+      return runBuildInFunction(name.substring(8, name.length), payload);
+    }
+    const data = await readFileData(name.split("/"));
+    const runner = new NodeRunner();
+    return await runner.run(data.graph, payload);
+  });
   const result = await runner.run(nodeMap, data);
   console.log("Got the result: ", result);
   console.log("==============================================");
