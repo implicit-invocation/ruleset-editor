@@ -1,5 +1,6 @@
 import { Colors, Controls, FlumeConfig } from "flume";
 import { createExpressionControl } from "./control/ExpressionControl";
+import { createFunctionControl } from "./control/FunctionControl";
 
 export const registerBasicPort = (config: FlumeConfig) => {
   config.addPortType({
@@ -22,6 +23,20 @@ export const registerBasicPort = (config: FlumeConfig) => {
       Controls.text({
         name: "string",
         label: "Text",
+      }),
+    ],
+  });
+  config.addPortType({
+    type: "function",
+    label: "Function",
+    name: "function",
+    hidePort: true,
+    controls: [
+      Controls.custom({
+        name: "function",
+        label: "Function",
+        defaultValue: "",
+        render: createFunctionControl,
       }),
     ],
   });

@@ -4,8 +4,8 @@ import { AiOutlineExpand } from "react-icons/ai";
 import { config } from "./flume-config/config";
 import { MaybePromise, NodeRunner } from "./runtime";
 import { IconButton } from "./ui/common/Button";
+import { BottomPanel } from "./ui/panel/BottomPanel";
 import { LeftPanel } from "./ui/panel/LeftPanel";
-import { Output } from "./ui/panel/Output";
 import { eventEmitter } from "./util/eventEmitter";
 import { OpenFileProvider, useOpenFile, useOpenFileContext } from "./util/file/openFile";
 import { readFileData } from "./util/folderActions";
@@ -75,7 +75,7 @@ export const Editor = () => {
       data.graph = nodeMap;
       saveData(data);
     },
-    [openFile, data, saveData],
+    [openFile, data, saveData]
   );
 
   return (
@@ -110,7 +110,7 @@ export const Editor = () => {
             )}
           </div>
         </div>
-        <Output hidden={fullScreen} />
+        <BottomPanel hidden={fullScreen} />
       </div>
     </div>
   );

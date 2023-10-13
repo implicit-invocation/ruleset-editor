@@ -11,7 +11,7 @@ export const registerExternalNodes = (config: FlumeConfig) => {
       initialWidth: 200,
       inputs: (ports) => [ports.string({ name: "key", label: "Key" })],
       outputs: (ports) => [ports.object({ name: "value", label: "Value" })],
-    }),
+    })
   );
 
   config.addNodeType(
@@ -22,7 +22,7 @@ export const registerExternalNodes = (config: FlumeConfig) => {
       description: "Write data to a key-value store",
       initialWidth: 200,
       inputs: (ports) => [ports.string({ name: "key", label: "Key" }), ports.object({ name: "value", label: "Value" })],
-    }),
+    })
   );
 
   config.addNodeType(
@@ -33,10 +33,10 @@ export const registerExternalNodes = (config: FlumeConfig) => {
       description: "Call a function from the engine",
       initialWidth: 300,
       inputs: (ports) => [
-        ports.string({ name: "function", label: "Function name" }),
+        ports.function({ name: "function", label: "Function name" }),
         ports.object({ name: "data", label: "Payload (object)" }),
       ],
       outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
-    }),
+    })
   );
 };

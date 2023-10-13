@@ -39,7 +39,17 @@ export const FunctionFolderDisplay = ({ folder, path }: { folder: Folder; path: 
         const childPath = [...path, child.name];
 
         return (
-          <div key={child.name} className="flex flex-col">
+          <div
+            key={child.name}
+            className="flex flex-col"
+            draggable={child.type === "item"}
+            onDragStart={(e) => {
+              if (child.type !== "item") {
+                return;
+              }
+              e.dataTransfer.setData("text", childPath.join("/"));
+            }}
+          >
             <div
               className={[
                 "flex items-center gap-1 cursor-pointer hover:bg-gray-800 justify-start relative py-1",

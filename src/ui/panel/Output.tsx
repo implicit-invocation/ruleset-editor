@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Console, Hook, Unhook } from "console-feed";
-import { Resizable } from "re-resizable";
+import { Message } from "console-feed/lib/definitions/Console";
 import { useEffect, useRef, useState } from "react";
-import { PanelHeader } from "../common/PanelHeader";
 
-export const Output = ({ hidden }: { hidden: boolean }) => {
-  const [logs, setLogs] = useState<any[]>([]);
+export const Output = () => {
+  const [logs, setLogs] = useState<Message[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,7 +19,7 @@ export const Output = ({ hidden }: { hidden: boolean }) => {
           });
         }, 0);
       },
-      false,
+      false
     );
     return () => {
       Unhook(hookedConsole);
@@ -29,23 +27,13 @@ export const Output = ({ hidden }: { hidden: boolean }) => {
   }, []);
 
   return (
-    <Resizable
-      className="border-t-2 border-gray-800 shadow-lg bg-gray-900 text-gray-300 flex flex-col"
-      style={{
-        display: hidden ? "none" : "flex",
-      }}
-      enable={{
-        top: true,
-      }}
-      defaultSize={{
-        width: "100%",
-        height: 300,
-      }}
-    >
-      <PanelHeader headerTitle="OUTPUT" />
-      <div className="flex-1 pb-10 overflow-auto" ref={ref}>
-        <Console logs={logs} variant="dark" />
-      </div>
-    </Resizable>
+    <div className="shadow-lg bg-gray-900 text-gray-300 flex-1 overflow-auto pb-10" ref={ref}>
+      <Console
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        logs={logs as any}
+        variant="dark"
+        filter={["log", "debug", "info", "warn", "error", "table", "clear", "time", "timeEnd", "count", "assert"]}
+      />
+    </div>
   );
 };
