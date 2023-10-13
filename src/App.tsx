@@ -105,6 +105,7 @@ export const Editor = () => {
                 onChange={persistNodeMap}
                 nodeTypes={config.nodeTypes}
                 portTypes={config.portTypes}
+                initialScale={0.8}
                 defaultNodes={[
                   {
                     type: "input",

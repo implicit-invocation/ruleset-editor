@@ -14,10 +14,12 @@ getMonaco();
 export const Monaco = ({
   value,
   onContentChange,
+  mode,
   ...props
 }: React.ButtonHTMLAttributes<HTMLDivElement> & {
   value?: string;
   onContentChange?: (value: string) => void;
+  mode?: string;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<editor.IStandaloneCodeEditor | null>(
@@ -27,8 +29,11 @@ export const Monaco = ({
     if (ref.current) {
       getMonaco().then((monaco) => {
         if (ref.current) {
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: false,
+          });
           const editor = monaco.editor.create(ref.current, {
-            language: "json",
+            language: mode || "json",
             theme: "vs-dark",
             automaticLayout: true,
             lineNumbers: "off",
@@ -41,7 +46,7 @@ export const Monaco = ({
         }
       });
     }
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     if (editor && onContentChange) {
