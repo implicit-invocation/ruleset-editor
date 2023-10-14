@@ -1,19 +1,26 @@
-import { NodeEditor, NodeMap } from "flume";
+import { NodeMap as FlumeNodeMap, NodeEditor } from "flume";
 import { useCallback, useEffect, useState } from "react";
 import { AiOutlineExpand } from "react-icons/ai";
 import { Configuration } from ".";
 import { config } from "./flume-config/config";
+import { NodeMap } from "./runtime";
 import { IconButton } from "./ui/common/Button";
 import { BottomPanel } from "./ui/panel/BottomPanel";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { eventEmitter } from "./util/eventEmitter";
 import { OpenFileProvider, useOpenFile, useOpenFileContext } from "./util/file/openFile";
 
-const testRun = async (nodeMap: NodeMap, data: unknown) => {
+const convertNodeMap = (nodeMap: FlumeNodeMap): NodeMap => {
+  return {
+    ...nodeMap,
+  };
+};
+
+const testRun = async (nodeMap: FlumeNodeMap, data: unknown) => {
   console.log("==============================================");
   console.log("Start running with data: ", data);
   const runner = await Configuration.testRun.nodeRunner();
-  const result = await runner.run(nodeMap, data);
+  const result = await runner.run(convertNodeMap(nodeMap), data);
   console.log("Got the result: ", result);
   console.log("==============================================");
 };
@@ -37,7 +44,7 @@ const InternalEditor = ({ className, ...props }: React.ButtonHTMLAttributes<HTML
   }, [data]);
 
   const persistNodeMap = useCallback(
-    (nodeMap: NodeMap) => {
+    (nodeMap: FlumeNodeMap) => {
       if (!openFile || !data) {
         return;
       }

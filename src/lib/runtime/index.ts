@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Connection, ConnectionMap, FlumeNode, NodeMap } from "flume";
+import { FlumeNode } from "flume";
 import jsonata from "jsonata";
+import type { Connection, ConnectionMap, GraphNode, NodeMap } from "./type";
+export type { Connection, ConnectionMap, GraphNode, NodeMap };
 
 export type MaybePromise<T> = T | Promise<T>;
 
@@ -13,7 +15,7 @@ const flattenConnectionMap = (connectionMap: ConnectionMap) => {
 // TODO: flume alias and group, number and number operator nodes, read/write data orders
 // TODO: resolve loop, maximum call for each run id
 export const handleNodeRun = async (
-  node: FlumeNode,
+  node: GraphNode,
   data: any,
   functionHandler: ExternalFunctionHandler,
   kvStore: KVStore,
@@ -44,6 +46,9 @@ export const handleNodeRun = async (
         valid: false,
       };
     }
+    if (typeof expression !== "string") {
+      throw new Error("Expression is not a string");
+    }
     const evaluationResult = await jsonata(expression).evaluate(data);
     return {
       valid: evaluationResult == true,
@@ -55,6 +60,9 @@ export const handleNodeRun = async (
         string: data,
       };
     }
+    if (typeof expression !== "string") {
+      throw new Error("Expression is not a string");
+    }
     const evaluationResult = await jsonata(expression).evaluate(data);
     return {
       string: evaluationResult,
@@ -65,6 +73,9 @@ export const handleNodeRun = async (
       return {
         output: data,
       };
+    }
+    if (typeof expression !== "string") {
+      throw new Error("Expression is not a string");
     }
     const evaluationResult = await jsonata(expression).evaluate(data);
     return {
@@ -107,6 +118,9 @@ export const handleNodeRun = async (
     await kvStore.set(data?.key ?? node.inputData?.key?.string, data?.value ?? node.inputData?.value?.string);
   } else if (node.type === "call") {
     const funcName = node.inputData.function.function;
+    if (typeof funcName !== "string") {
+      throw new Error("Function name is not a string");
+    }
     const output = await functionHandler(funcName, data?.data);
     return { output };
   } else if (node.type === "output") {
@@ -114,6 +128,9 @@ export const handleNodeRun = async (
     outputs[key] = data?.input;
   } else if (node.type === "loop") {
     const funcName = node.inputData.function.function;
+    if (typeof funcName !== "string") {
+      throw new Error("Function name is not a string");
+    }
     const array = data?.array;
     if (!Array.isArray(array)) {
       throw new Error("Input is not an array");
