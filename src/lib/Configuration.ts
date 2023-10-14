@@ -21,3 +21,7 @@ export const Configuration: {
   functionProvider: localStorageFunctionProvider,
   testRun: defaultTestRunSetting,
 };
+
+export const setConfiguration = (config: Partial<typeof Configuration>) => {
+  Object.assign(Configuration, config);
+};
