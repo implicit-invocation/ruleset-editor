@@ -1,6 +1,9 @@
 import { Folder, Item } from "./types";
 
 export const compareFolderNode = (a: Folder | Item, b: Folder | Item) => {
+  if (a.name === "builtin:") {
+    return 1000;
+  }
   if (a.type === "folder" && b.type === "item") {
     return -1;
   } else if (a.type === "item" && b.type === "folder") {

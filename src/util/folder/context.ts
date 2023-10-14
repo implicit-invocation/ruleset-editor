@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Folder, FolderActionCallback } from "./types";
 import { getPathType, isExpanded } from "./util";
 
@@ -26,6 +26,33 @@ export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderAc
       }
     | undefined
   >();
+
+  const augumentedFolder = useMemo<Folder>(() => {
+    return {
+      ...folder,
+      children: [
+        ...folder.children,
+        {
+          type: "folder",
+          name: "builtin:",
+          children: [
+            {
+              type: "item",
+              name: "checkDailyLimit",
+            },
+            {
+              type: "item",
+              name: "dispatchAction",
+            },
+            {
+              type: "item",
+              name: "getInventory",
+            },
+          ],
+        },
+      ],
+    };
+  }, [folder]);
 
   const [deletionConfirm, setDeletionConfirm] = useState<
     | {
@@ -73,7 +100,7 @@ export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderAc
       currentFolder.children.push(type === "item" ? { type: "item", name } : { type: "folder", name, children: [] });
       setFolder({ ...folder });
     },
-    [folder, folderActionCallback],
+    [folder, folderActionCallback]
   );
 
   const remove = useCallback(
@@ -109,7 +136,7 @@ export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderAc
       currentFolder.children.splice(index, 1);
       setFolder({ ...folder });
     },
-    [folder, folderActionCallback],
+    [folder, folderActionCallback]
   );
 
   const expand = useCallback((path: string[]) => {
@@ -154,7 +181,7 @@ export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderAc
   }, []);
 
   return {
-    root: folder,
+    root: augumentedFolder,
     add,
     remove,
     selectedPath,

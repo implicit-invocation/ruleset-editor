@@ -32,7 +32,7 @@ export const Functions = () => {
     const pathType = getPathType(root, selectedPath);
 
     if (pathType === "item") {
-      eventEmitter.emit("openFile", selectedPath);
+      eventEmitter.emit("openFile", selectedPath[0] === "builtin:" ? undefined : selectedPath);
     }
   }, [selectedPath, root]);
 
@@ -42,6 +42,9 @@ export const Functions = () => {
         return;
       }
       let type = "folder";
+      if (folder.selectedPath && folder.selectedPath[0] === "builtin:") {
+        return;
+      }
       if (!folder.selectedPath) {
         folder.selectedPath = [];
       } else {
@@ -91,6 +94,9 @@ export const Functions = () => {
             size="sm"
             onClick={async () => {
               if (!folder.selectedPath) {
+                return;
+              }
+              if (folder.selectedPath[0] === "builtin:") {
                 return;
               }
               const confirmed = await folder.confirmDelete(folder.selectedPath);

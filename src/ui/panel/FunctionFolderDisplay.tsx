@@ -1,4 +1,11 @@
-import { AiFillDelete, AiOutlineDown, AiOutlineFolder, AiOutlineFunction, AiOutlineRight } from "react-icons/ai";
+import {
+  AiFillDelete,
+  AiOutlineDown,
+  AiOutlineFolder,
+  AiOutlineFunction,
+  AiOutlineLock,
+  AiOutlineRight,
+} from "react-icons/ai";
 import { useFolderContext } from "../../util/folder/context";
 import { Folder } from "../../util/folder/types";
 import { compareFolderNode, isExpanded, isPathPointingToItem, isSamePath } from "../../util/folder/util";
@@ -47,7 +54,7 @@ export const FunctionFolderDisplay = ({ folder, path }: { folder: Folder; path: 
               if (child.type !== "item") {
                 return;
               }
-              e.dataTransfer.setData("text", childPath.join("/"));
+              e.dataTransfer.setData("text", childPath[0] === "builtin:" ? childPath.join("") : childPath.join("/"));
             }}
           >
             <div
@@ -72,7 +79,15 @@ export const FunctionFolderDisplay = ({ folder, path }: { folder: Folder; path: 
               {child.type === "folder" && (isExpanded(expanded, childPath) ? <AiOutlineDown /> : <AiOutlineRight />)}
 
               {child.type === "item" && <AiOutlineFunction className="h-4 w-4" />}
-              <div>{child.name}</div>
+              <div
+                className={[
+                  "flex flex-row justify-start items-center gap-0.5",
+                  childPath[0] === "builtin:" ? "text-indigo-400" : undefined,
+                ].join(" ")}
+              >
+                {childPath[0] === "builtin:" && <AiOutlineLock />}
+                {child.name}
+              </div>
 
               {deletionConfirm && isPathPointingToItem(child.name, path, deletionConfirm.path) && (
                 <div
