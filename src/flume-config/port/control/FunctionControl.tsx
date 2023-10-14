@@ -12,6 +12,7 @@ export const createFunctionControl: ControlRenderCallback = (data, onChange) => 
     >
       <div>Current Function:</div>
       <div className="font-bold text-sm">{data ? data.split("/").join(" > ") : "None"}</div>
+      <div className="text-xs italic">Drag the function file from the left panel!</div>
     </div>
   );
 };
