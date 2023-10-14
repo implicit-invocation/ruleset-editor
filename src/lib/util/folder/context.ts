@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { Folder, FolderActionCallback } from "./types";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { Configuration } from "../..";
+import { Folder, FolderActionCallback, Item } from "./types";
 import { getPathType, isExpanded } from "./util";
 
 export class Deferred<T> {
@@ -26,32 +27,30 @@ export const useFolder = (initialFolder: Folder, folderActionCallback?: FolderAc
       }
     | undefined
   >();
+  const [augumentedFolder, setAugumentedFolder] = useState<Folder>(initialFolder);
+  useEffect(() => {
+    const handler = async () => {
+      const builtInFunctions = Configuration.functionProvider.builtInFunctions;
+      let functionNames;
+      if (typeof builtInFunctions === "function") {
+        functionNames = await builtInFunctions();
+      } else {
+        functionNames = builtInFunctions;
+      }
+      setAugumentedFolder({
+        ...folder,
 
-  const augumentedFolder = useMemo<Folder>(() => {
-    return {
-      ...folder,
-      children: [
-        ...folder.children,
-        {
-          type: "folder",
-          name: "builtin:",
-          children: [
-            {
-              type: "item",
-              name: "checkDailyLimit",
-            },
-            {
-              type: "item",
-              name: "dispatchAction",
-            },
-            {
-              type: "item",
-              name: "getInventory",
-            },
-          ],
-        },
-      ],
+        children: [
+          ...folder.children,
+          {
+            type: "folder",
+            name: "builtin:",
+            children: functionNames.map<Item>((name) => ({ type: "item", name })),
+          },
+        ],
+      });
     };
+    handler();
   }, [folder]);
 
   const [deletionConfirm, setDeletionConfirm] = useState<

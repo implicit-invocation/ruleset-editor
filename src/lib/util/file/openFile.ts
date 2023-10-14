@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { Configuration, FunctionData } from "../..";
 import { eventEmitter } from "../eventEmitter";
-import { FunctionData, readFileData, writeFileData } from "../folderActions";
 
 export const useOpenFile = () => {
   const [openFile, setOpenFile] = useState<string[] | undefined>(undefined);
@@ -14,7 +14,7 @@ export const useOpenFile = () => {
         setOpenFile(file);
         setData(undefined);
         setTimeout(async () => {
-          const data = await readFileData(file);
+          const data = await Configuration.functionProvider.readFunctionData(file);
           setData(data);
         }, 0);
       }
@@ -31,9 +31,9 @@ export const useOpenFile = () => {
         return;
       }
       setData(data);
-      await writeFileData(openFile, data);
+      await Configuration.functionProvider.writeFunctionData(openFile, data);
     },
-    [openFile],
+    [openFile]
   );
 
   return { openFile, data, saveData };

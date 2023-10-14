@@ -1,10 +1,11 @@
 import { Resizable } from "re-resizable";
 import { useCallback, useEffect } from "react";
 import { AiOutlineDelete, AiOutlineFolder, AiOutlineFunction, AiOutlinePlus } from "react-icons/ai";
+
+import { Configuration, handleFolderAction } from "../..";
 import { eventEmitter } from "../../util/eventEmitter";
 import { FolderProvider, useFolder } from "../../util/folder/context";
 import { getPathType } from "../../util/folder/util";
-import { localFolderAction, readFolder } from "../../util/folderActions";
 import { IconButton } from "../common/Button";
 import { PanelHeader } from "../common/PanelHeader";
 import { FunctionFolderDisplay } from "./FunctionFolderDisplay";
@@ -16,13 +17,13 @@ export const Functions = () => {
       type: "folder",
       children: [],
     },
-    localFolderAction
+    handleFolderAction
   );
 
   const { setRoot, selectedPath, root } = folder;
 
   useEffect(() => {
-    readFolder().then(setRoot);
+    Promise.resolve(Configuration.functionProvider.readFolder()).then(setRoot);
   }, [setRoot]);
 
   useEffect(() => {

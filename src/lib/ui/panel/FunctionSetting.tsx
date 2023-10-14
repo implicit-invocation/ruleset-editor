@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { Configuration } from "../..";
 import { eventEmitter } from "../../util/eventEmitter";
-import { readFileData, writeFileData } from "../../util/folderActions";
 import { SimpleButton } from "../common/Button";
 import { Monaco } from "../common/Editor";
 import { PanelHeader } from "../common/PanelHeader";
@@ -17,7 +17,7 @@ export const FunctionSettings = () => {
       setOpenFile(path);
       setInput("");
       setTimeout(async () => {
-        const data = await readFileData(path);
+        const data = await Configuration.functionProvider.readFunctionData(path);
         setInput(data.input);
       }, 0);
     };
@@ -31,9 +31,9 @@ export const FunctionSettings = () => {
       return;
     }
     const handler = async () => {
-      const data = await readFileData(openFile);
+      const data = await Configuration.functionProvider.readFunctionData(openFile);
       data.input = input;
-      await writeFileData(openFile, data);
+      await Configuration.functionProvider.writeFunctionData(openFile, data);
     };
     handler();
   }, [input, openFile]);
