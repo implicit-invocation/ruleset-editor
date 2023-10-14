@@ -1,7 +1,7 @@
-import { Configuration, FunctionData, FunctionProviderSetting, MaybePromise, NodeRunner, TestRunSetting } from "..";
+import { Configuration, FunctionData, FunctionProviderSetting, FunctionRegistry, NodeRunner, TestRunSetting } from "..";
 import { LocalStorageKvStore } from "../util/kvStore";
 
-const dummyBuiltInFunctions: Record<string, (payload: unknown) => MaybePromise<unknown>> = {
+const dummyBuiltInFunctions: FunctionRegistry = {
   echo(payload: unknown) {
     console.log("Receive payload:", payload, "and send it back!");
     return payload;

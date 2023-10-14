@@ -23,3 +23,7 @@ export type FunctionData = {
   input: string;
   graph: NodeMap;
 };
+
+export type FunctionRegistry = {
+  [key: string]: (payload: unknown) => Promise<unknown> | unknown;
+};
