@@ -2,7 +2,7 @@ import { Colors, Controls, FlumeConfig } from "flume";
 import { createExpressionControl } from "./control/ExpressionControl";
 import { createFunctionControl } from "./control/FunctionControl";
 
-export const registerBasicPort = (config: FlumeConfig) => {
+export const registerBasicPort = (config: FlumeConfig, customTypes: string[]) => {
   config.addPortType({
     name: "boolean",
     type: "boolean",
@@ -12,6 +12,7 @@ export const registerBasicPort = (config: FlumeConfig) => {
   config.addPortType({
     name: "object",
     type: "object",
+    acceptTypes: ["object", ...customTypes],
     label: "any",
   });
   config.addPortType({

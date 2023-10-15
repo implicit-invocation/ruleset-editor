@@ -11,8 +11,8 @@ import { registerMultivarPort } from "./port/multivar";
 import { registerFlexiblePort } from "./port/schema";
 import { registerTriggerPort } from "./port/trigger";
 
-export const initConfig = (config: FlumeConfig) => {
-  registerBasicPort(config);
+export const initConfig = (config: FlumeConfig, customTypes: string[]) => {
+  registerBasicPort(config, customTypes);
   registerTriggerPort(config);
   // TODO: move run button to top bar, remove this, add function setting with example input and output logging panel
   registerMultivarPort(config);

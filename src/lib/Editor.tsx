@@ -62,7 +62,7 @@ const InternalEditor = ({
   const customConfig = useMemo<FlumeConfig>(() => {
     const newConfig = new FlumeConfig();
     registerAllSchemaPort(newConfig, customTypes);
-    initConfig(newConfig);
+    initConfig(newConfig, customTypes);
     return newConfig;
   }, [customTypes]);
 
