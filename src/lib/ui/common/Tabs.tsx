@@ -3,14 +3,16 @@ import { useState } from "react";
 export const Tabs = ({
   renderTab,
   renderTitle,
+  initialActiveIndex,
   tabNames,
   ...props
 }: React.ButtonHTMLAttributes<HTMLDivElement> & {
+  initialActiveIndex?: number;
   tabNames: string[];
   renderTab: (name: string) => React.ReactNode;
   renderTitle: (name: string) => React.ReactNode;
 }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex || 0);
   return (
     <div {...props} className="w-full h-full flex flex-col">
       <div className="flex flex-row gap-2 p-1 px-3">

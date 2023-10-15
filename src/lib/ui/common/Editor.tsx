@@ -55,7 +55,7 @@ export const Monaco = ({
   }, [onContentChange, editor]);
 
   useEffect(() => {
-    if (editor && value) {
+    if (editor && value !== undefined) {
       if (editor.getValue() !== value) {
         editor.setValue(value);
       }

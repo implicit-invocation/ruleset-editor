@@ -8,6 +8,11 @@ export type FunctionProviderSetting = {
   readFunctionData: (path: string[]) => MaybePromise<FunctionData>;
   add(type: "item" | "folder", name: string, path: string[]): MaybePromise<boolean>;
   remove(type: "item" | "folder", name: string, path: string[]): MaybePromise<boolean>;
+
+  getSchemaList: () => MaybePromise<string[]>;
+  getSchema: (name: string) => MaybePromise<string>;
+  setSchema: (name: string, schema: string) => MaybePromise<void>;
+  deleteSchema: (name: string) => MaybePromise<void>;
 };
 
 export type TestRunSetting = {
@@ -22,6 +27,10 @@ export const Configuration: {
   testRun: defaultTestRunSetting,
 };
 
-export const setConfiguration = (config: Partial<typeof Configuration>) => {
-  Object.assign(Configuration, config);
+export const setConfiguration = (config: {
+  functionProvider?: Partial<FunctionProviderSetting>;
+  testRun?: Partial<TestRunSetting>;
+}) => {
+  if (config.testRun) Object.assign(Configuration.testRun, config.testRun);
+  if (config.functionProvider) Object.assign(Configuration.functionProvider, config.functionProvider);
 };

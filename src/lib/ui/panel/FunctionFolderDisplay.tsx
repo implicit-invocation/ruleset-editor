@@ -91,7 +91,7 @@ export const FunctionFolderDisplay = ({ folder, path }: { folder: Folder; path: 
 
               {deletionConfirm && isPathPointingToItem(child.name, path, deletionConfirm.path) && (
                 <div
-                  className="h-full w-full absolute flex flex-row justify-end items-center gap-2 px-2 text-xs bg-white/25"
+                  className="h-full w-full absolute flex flex-row justify-end items-center gap-2 px-2 text-xs bg-black/75"
                   style={{
                     marginLeft: `-${path.length * 1}rem`,
                   }}

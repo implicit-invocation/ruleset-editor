@@ -2,6 +2,7 @@ import { Resizable } from "re-resizable";
 import { PanelHeader } from "../common/PanelHeader";
 import { Tabs } from "../common/Tabs";
 import { Output } from "./Output";
+import { Schema } from "./Schema";
 
 const renderTitle = (name: string) => {
   return <PanelHeader headerTitle={name} />;
@@ -12,7 +13,7 @@ const renderTab = (name: string) => {
     case "Ouput":
       return <Output />;
     case "Schema":
-      return <div>Schema</div>;
+      return <Schema />;
     default:
       return <div>Unknown</div>;
   }
@@ -33,7 +34,7 @@ export const BottomPanel = ({ hidden }: { hidden: boolean }) => {
         height: 300,
       }}
     >
-      <Tabs tabNames={["Ouput", "Schema"]} renderTitle={renderTitle} renderTab={renderTab} />
+      <Tabs tabNames={["Ouput", "Schema"]} renderTitle={renderTitle} renderTab={renderTab} initialActiveIndex={1} />
     </Resizable>
   );
 };

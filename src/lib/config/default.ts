@@ -73,6 +73,36 @@ export const localStorageFunctionProvider: FunctionProviderSetting = {
     localStorage.setItem("folderStructure", JSON.stringify(folder));
     return true;
   },
+
+  getSchemaList: async () => {
+    const data = localStorage.getItem("schemaList");
+    if (data === null) {
+      return [];
+    }
+    return JSON.parse(data);
+  },
+  getSchema: async (name: string) => {
+    const data = localStorage.getItem("schema:" + name);
+    if (data === null) {
+      return "";
+    }
+    return data;
+  },
+  setSchema: async (name: string, schema: string) => {
+    const schemaList = await localStorageFunctionProvider.getSchemaList();
+    if (!schemaList.includes(name)) {
+      schemaList.push(name);
+      localStorage.setItem("schemaList", JSON.stringify(schemaList));
+    }
+    localStorage.setItem("schema:" + name, schema);
+  },
+  deleteSchema: async (name: string) => {
+    const schemaList = await localStorageFunctionProvider.getSchemaList();
+    if (schemaList.includes(name)) {
+      localStorage.setItem("schemaList", JSON.stringify(schemaList.filter((item) => item !== name)));
+    }
+    localStorage.removeItem("schema:" + name);
+  },
 };
 
 const runBuildInFunction = async (name: string, payload: unknown) => {
