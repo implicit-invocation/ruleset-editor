@@ -1,21 +1,18 @@
 import { FlumeConfig } from "flume";
-import { createTriggerableNode } from "./triggerable";
+import { createFlexibleOutputNode, createTriggerableNode } from "./triggerable";
 
 export const registerIONodes = (config: FlumeConfig) => {
-  config.addNodeType({
-    sortIndex: 0,
-    type: "input",
-    label: "IO: Input",
-    description: "Input data",
-    initialWidth: 200,
-    outputs: (ports) => [
-      ports.object({
-        name: "output",
-        label: "Object",
-      }),
-      ports.trigger({ name: "trigger", label: "Trigger" }),
-    ],
-  });
+  // TODO: schema for input example, check in runtime too
+  config.addNodeType(
+    createFlexibleOutputNode({
+      sortIndex: 0,
+      type: "input",
+      label: "IO: Input",
+      description: "Input data",
+      initialWidth: 200,
+      outputs: (ports) => [ports.trigger({ name: "trigger", label: "Trigger" })],
+    })
+  );
 
   config.addNodeType({
     sortIndex: 1,

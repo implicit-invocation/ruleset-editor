@@ -8,7 +8,7 @@ export const registerMultivarPort = (config: FlumeConfig) => {
     label: "Multivar",
     controls: [
       Controls.custom({
-        defaultValue: ["input"],
+        defaultValue: [{ name: "input", type: "object" }],
         label: "Input variables",
         name: "variables",
         render: createMultivarControl,

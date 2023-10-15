@@ -1,5 +1,5 @@
 import { FlumeConfig } from "flume";
-import { createTriggerableNode } from "./triggerable";
+import { createFlexibleNode, createTriggerableNode } from "./triggerable";
 
 export const registerExternalNodes = (config: FlumeConfig) => {
   config.addNodeType(
@@ -26,17 +26,15 @@ export const registerExternalNodes = (config: FlumeConfig) => {
   );
 
   config.addNodeType(
-    createTriggerableNode({
-      sortIndex: 5,
-      type: "call",
-      label: "External: Call engine function",
-      description: "Call a function from the engine",
-      initialWidth: 300,
-      inputs: (ports) => [
-        ports.function({ name: "function", label: "Function name" }),
-        ports.object({ name: "data", label: "Payload (object)" }),
-      ],
-      outputs: (ports) => [ports.object({ name: "output", label: "Output" })],
-    })
+    createTriggerableNode(
+      createFlexibleNode({
+        sortIndex: 5,
+        type: "call",
+        label: "External: Call engine function",
+        description: "Call a function from the engine",
+        initialWidth: 300,
+        inputs: (ports) => [ports.function({ name: "function", label: "Function name" })],
+      })
+    )
   );
 };

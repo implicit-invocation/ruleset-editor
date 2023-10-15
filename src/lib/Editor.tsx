@@ -1,8 +1,9 @@
-import { NodeMap as FlumeNodeMap, NodeEditor } from "flume";
-import { useCallback, useEffect, useState } from "react";
+import { FlumeConfig, NodeMap as FlumeNodeMap, NodeEditor } from "flume";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AiOutlineExpand } from "react-icons/ai";
 import { Configuration } from ".";
-import { config } from "./flume-config/config";
+import { initConfig } from "./flume-config/config";
+import { registerAllSchemaPort } from "./flume-config/port/schema";
 import { NodeMap } from "./runtime";
 import { IconButton } from "./ui/common/Button";
 import { BottomPanel } from "./ui/panel/BottomPanel";
@@ -25,7 +26,11 @@ const testRun = async (nodeMap: FlumeNodeMap, data: unknown) => {
   console.log("==============================================");
 };
 
-const InternalEditor = ({ className, ...props }: React.ButtonHTMLAttributes<HTMLDivElement>) => {
+const InternalEditor = ({
+  className,
+  customTypes,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLDivElement> & { customTypes: string[] }) => {
   const [fullScreen, setFullScreen] = useState(false);
 
   const { openFile, data, saveData } = useOpenFileContext();
@@ -54,6 +59,13 @@ const InternalEditor = ({ className, ...props }: React.ButtonHTMLAttributes<HTML
     [openFile, data, saveData]
   );
 
+  const customConfig = useMemo<FlumeConfig>(() => {
+    const newConfig = new FlumeConfig();
+    registerAllSchemaPort(newConfig, customTypes);
+    initConfig(newConfig);
+    return newConfig;
+  }, [customTypes]);
+
   return (
     <div {...props} className={["flex-1 flex", className].join(" ")}>
       <LeftPanel hidden={fullScreen} />
@@ -72,8 +84,8 @@ const InternalEditor = ({ className, ...props }: React.ButtonHTMLAttributes<HTML
               <NodeEditor
                 nodes={data.graph}
                 onChange={persistNodeMap}
-                nodeTypes={config.nodeTypes}
-                portTypes={config.portTypes}
+                nodeTypes={customConfig.nodeTypes}
+                portTypes={customConfig.portTypes}
                 initialScale={0.8}
                 defaultNodes={[
                   {
@@ -94,9 +106,26 @@ const InternalEditor = ({ className, ...props }: React.ButtonHTMLAttributes<HTML
 
 export const Editor = () => {
   const openFileHandler = useOpenFile();
+  const [ready, setReady] = useState(false);
+  const [customTypes, setCustomTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const schemaList = await Configuration.functionProvider.getSchemaList();
+      setCustomTypes(schemaList);
+      setReady(true);
+    })();
+  }, []);
+
+  if (!ready) {
+    <div className="w-full h-full flex flex-col justify-center items-center">
+      <div className="text-3xl text-gray-500">Loading...</div>
+    </div>;
+  }
+
   return (
     <OpenFileProvider value={openFileHandler}>
-      <InternalEditor />
+      <InternalEditor customTypes={customTypes} />
     </OpenFileProvider>
   );
 };

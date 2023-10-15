@@ -12,7 +12,7 @@ export const registerBasicPort = (config: FlumeConfig) => {
   config.addPortType({
     name: "object",
     type: "object",
-    label: "Object",
+    label: "any",
   });
   config.addPortType({
     type: "string",
