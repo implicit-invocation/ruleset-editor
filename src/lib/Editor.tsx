@@ -10,6 +10,7 @@ import { BottomPanel } from "./ui/panel/BottomPanel";
 import { LeftPanel } from "./ui/panel/LeftPanel";
 import { eventEmitter } from "./util/eventEmitter";
 import { OpenFileProvider, useOpenFile, useOpenFileContext } from "./util/file/openFile";
+import { DEFAULT_LIST, useSchemaList } from "./util/schema/hook";
 
 const convertNodeMap = (nodeMap: FlumeNodeMap): NodeMap => {
   return {
@@ -61,7 +62,10 @@ const InternalEditor = ({
 
   const customConfig = useMemo<FlumeConfig>(() => {
     const newConfig = new FlumeConfig();
-    registerAllSchemaPort(newConfig, customTypes);
+    registerAllSchemaPort(
+      newConfig,
+      customTypes.filter((type) => !DEFAULT_LIST.includes(type))
+    );
     initConfig(newConfig, customTypes);
     return newConfig;
   }, [customTypes]);
@@ -87,13 +91,7 @@ const InternalEditor = ({
                 nodeTypes={customConfig.nodeTypes}
                 portTypes={customConfig.portTypes}
                 initialScale={0.8}
-                defaultNodes={[
-                  {
-                    type: "input",
-                    x: -500,
-                    y: 0,
-                  },
-                ]}
+                defaultNodes={[]}
               />
             )}
           </div>
@@ -107,15 +105,11 @@ const InternalEditor = ({
 export const Editor = () => {
   const openFileHandler = useOpenFile();
   const [ready, setReady] = useState(false);
-  const [customTypes, setCustomTypes] = useState<string[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      const schemaList = await Configuration.functionProvider.getSchemaList();
-      setCustomTypes(schemaList);
-      setReady(true);
-    })();
+  const markReady = useCallback(() => {
+    setReady(true);
   }, []);
+  const customTypes = useSchemaList(markReady);
 
   if (!ready) {
     <div className="w-full h-full flex flex-col justify-center items-center">

@@ -50,8 +50,10 @@ export const createFlexibleOutputNode = (config: NodeTypeConfig, outputName = "o
       }
       let dataPort = ports.object({ name: outputName, label: "Payload (object)" });
       const type = data?.outputType?.schema;
-      if (type && type !== "any") {
-        dataPort = ports[type]({ name: outputName, label: `Payload (${type})` });
+      if (type && type !== "object") {
+        dataPort = ports[type]
+          ? ports[type]({ name: outputName, label: `Payload (${type})` })
+          : ports.object({ name: outputName, label: `Payload (${type}) - missing` });
       }
       return [...ownPorts, dataPort];
     },
@@ -75,8 +77,10 @@ export const createFlexibleInputNode = (config: NodeTypeConfig, inputName = "dat
       }
       let dataPort = ports.object({ name: inputName, label: "Payload (object)" });
       const type = data?.inputType?.schema;
-      if (type && type !== "any") {
-        dataPort = ports[type]({ name: inputName, label: `Payload (${type})` });
+      if (type && type !== "object") {
+        dataPort = ports[type]
+          ? ports[type]({ name: inputName, label: `Payload (${type})` })
+          : ports.object({ name: inputName, label: `Payload (${type}) - missing` });
       }
       return [...ownPorts, ports.flexible({ name: "inputType" }), dataPort];
     },

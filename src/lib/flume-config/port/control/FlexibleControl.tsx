@@ -1,16 +1,9 @@
 import { ControlRenderCallback } from "flume";
-import { useEffect, useState } from "react";
-import { Configuration } from "../../..";
+import { useSchemaList } from "../../../util/schema/hook";
 
 export const createFlexibleControl: ControlRenderCallback = (data, onChange, _context, _redraw, portProps) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [availableTypes, setAvailableTypes] = useState<string[]>(["any", "boolean", "string"]);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    Promise.resolve(Configuration.functionProvider.getSchemaList()).then((types) =>
-      setAvailableTypes(["any", "boolean", "string", ...types])
-    );
-  }, []);
+  const availableTypes = useSchemaList();
   return (
     <div className="flex flex-col gap-1">
       <div>{portProps.portName}</div>

@@ -10,7 +10,7 @@ export const registerFlexiblePort = (config: FlumeConfig) => {
     controls: [
       Controls.custom({
         name: "schema",
-        defaultValue: "any",
+        defaultValue: "object",
         label: "Type",
         render: createFlexibleControl,
       }),

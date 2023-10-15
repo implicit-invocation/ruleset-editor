@@ -65,6 +65,13 @@ export const Functions = () => {
       const available = getPathType(folder.root, newPath) === "none";
       if (available) {
         await folder.add(addType, result.name, addPath);
+        if (addType === "item") {
+          await Configuration.functionProvider.writeFunctionData(newPath, {
+            graph: {},
+            input: "",
+            name: result.name,
+          });
+        }
         folder.setSelectedPath([...addPath, result.name]);
         folder.cancelAdd();
       } else {

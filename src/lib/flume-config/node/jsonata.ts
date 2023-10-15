@@ -14,7 +14,9 @@ export const registerJsonataNode = (config: FlumeConfig) => {
           return [
             ports.multivar({ hidePort: true }),
             ...(data?.multivar?.variables || []).map(({ name, type }: { name: string; type: string }) =>
-              ports[type]({ name: name, label: `${name} (${type})` })
+              ports[type]
+                ? ports[type]({ name: name, label: `${name} (${type})` })
+                : ports.object({ name: name, label: `${name} (${type}) - missing` })
             ),
             ports.expression({
               name: "expression",

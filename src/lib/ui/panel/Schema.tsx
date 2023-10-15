@@ -1,7 +1,7 @@
 import { Resizable } from "re-resizable";
 import { useCallback, useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineFileDone, AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { Configuration, Deferred } from "../..";
+import { Configuration, Deferred, eventEmitter } from "../..";
 import { IconButton } from "../common/Button";
 import { Monaco } from "../common/Editor";
 
@@ -75,6 +75,7 @@ export const Schema = () => {
                   await Configuration.functionProvider.setSchema(result.name, "");
                   setSchemaList([...schemaList, result.name]);
                   openSchema(result.name);
+                  eventEmitter.emit("schemaListChanged");
                 }}
               />
               <IconButton
@@ -101,6 +102,7 @@ export const Schema = () => {
                   setSelectedSchema(undefined);
                   setDeleting(undefined);
                   setContent(undefined);
+                  eventEmitter.emit("schemaListChanged");
                 }}
               />
             </div>
