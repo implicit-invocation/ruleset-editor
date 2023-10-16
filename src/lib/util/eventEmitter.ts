@@ -8,3 +8,4 @@ type MessageEvents = {
 };
 
 export const eventEmitter = new EventEmitter() as TypedEmitter<MessageEvents>;
+eventEmitter.setMaxListeners(100);
