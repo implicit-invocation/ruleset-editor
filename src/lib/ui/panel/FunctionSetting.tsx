@@ -27,7 +27,7 @@ export const FunctionSettings = () => {
     };
   }, []);
   useEffect(() => {
-    if (!openFile || input === "") {
+    if (!openFile || input === "" || input === undefined) {
       return;
     }
     const handler = async () => {
