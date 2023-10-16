@@ -2,6 +2,7 @@ import { Resizable } from "re-resizable";
 import { useCallback, useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineFileDone, AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { Configuration, Deferred, eventEmitter } from "../..";
+import metaSchema from "../../util/json-meta-schema.json";
 import { IconButton } from "../common/Button";
 import { Monaco } from "../common/Editor";
 
@@ -184,7 +185,7 @@ export const Schema = () => {
         </div>
       </Resizable>
       <div className="flex-1 h-full">
-        <Monaco className="w-full h-full" value={content} onContentChange={setContent} />
+        <Monaco className="w-full h-full" value={content} onContentChange={setContent} schema={metaSchema} />
       </div>
     </div>
   );
