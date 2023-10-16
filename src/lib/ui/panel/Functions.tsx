@@ -60,6 +60,7 @@ export const Functions = () => {
       const result = await folder.requestAdd(addPath, addType);
       if (result.cancel) {
         folder.cancelAdd();
+        return;
       }
       const newPath = [...addPath, result.name];
       const available = getPathType(folder.root, newPath) === "none";
