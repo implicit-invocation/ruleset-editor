@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FlumeNode } from "flume";
 import jsonata from "jsonata";
 import type { Connection, ConnectionMap, GraphNode, NodeMap } from "./type";
 export type { Connection, ConnectionMap, GraphNode, NodeMap };
@@ -179,7 +178,7 @@ export const createMemoryKVStore = (): KVStore => {
 };
 
 export class NodeRunner {
-  private nodes: FlumeNode[] = [];
+  private nodes: GraphNode[] = [];
   constructor() {}
   promises = new Map<string, Deferred<unknown>>();
   started = new Map<string, boolean>();
@@ -204,7 +203,7 @@ export class NodeRunner {
       this.promises.get(targetNode.id)?.resolve(undefined);
     }
   }
-  async runNode(node: FlumeNode) {
+  async runNode(node: GraphNode) {
     if (this.started.has(node.id)) {
       return await this.promises.get(node.id)?.promise;
     }
