@@ -15,20 +15,23 @@ export const registerIONodes = (config: FlumeConfig) => {
   );
 
   config.addNodeType(
-    createFlexibleInputNode({
-      sortIndex: 1,
-      type: "output",
-      label: "IO: Output",
-      description: "Output data",
-      initialWidth: 200,
-      inputs: (ports) => [
-        ports.trigger({
-          name: "trigger",
-          label: "Trigger",
-        }),
-        ports.string({ name: "key", label: "Key" }),
-      ],
-    })
+    createFlexibleInputNode(
+      {
+        sortIndex: 1,
+        type: "output",
+        label: "IO: Output",
+        description: "Output data",
+        initialWidth: 200,
+        inputs: (ports) => [
+          ports.trigger({
+            name: "trigger",
+            label: "Trigger",
+          }),
+          ports.string({ name: "key", label: "Key" }),
+        ],
+      },
+      "input"
+    )
   );
 
   config.addNodeType({
