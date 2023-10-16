@@ -16,7 +16,7 @@ export const Monaco = ({
   onContentChange,
   mode,
   ...props
-}: React.ButtonHTMLAttributes<HTMLDivElement> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   value?: string;
   onContentChange?: (value: string) => void;
   mode?: string;

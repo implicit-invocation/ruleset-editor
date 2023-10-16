@@ -6,7 +6,7 @@ export const Tabs = ({
   initialActiveIndex,
   tabNames,
   ...props
-}: React.ButtonHTMLAttributes<HTMLDivElement> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   initialActiveIndex?: number;
   tabNames: string[];
   renderTab: (name: string) => React.ReactNode;

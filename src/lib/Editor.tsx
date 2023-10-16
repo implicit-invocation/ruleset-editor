@@ -31,7 +31,7 @@ const InternalEditor = ({
   className,
   customTypes,
   ...props
-}: React.ButtonHTMLAttributes<HTMLDivElement> & { customTypes: string[] }) => {
+}: React.HTMLAttributes<HTMLDivElement> & { customTypes: string[] }) => {
   const [fullScreen, setFullScreen] = useState(false);
 
   const { openFile, data, saveData } = useOpenFileContext();
@@ -102,7 +102,7 @@ const InternalEditor = ({
   );
 };
 
-export const Editor = () => {
+export const Editor = (props: React.HTMLAttributes<HTMLDivElement>) => {
   const openFileHandler = useOpenFile();
   const [ready, setReady] = useState(false);
 
@@ -119,7 +119,7 @@ export const Editor = () => {
 
   return (
     <OpenFileProvider value={openFileHandler}>
-      <InternalEditor customTypes={customTypes} />
+      <InternalEditor customTypes={customTypes} {...props} />
     </OpenFileProvider>
   );
 };

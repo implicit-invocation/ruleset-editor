@@ -1,4 +1,4 @@
-import { Editor } from "./lib/Editor";
+import { Editor } from "./lib";
 
 export const App = () => {
   return <Editor />;

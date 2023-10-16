@@ -2,7 +2,7 @@ export const PanelHeader = ({
   headerTitle,
   children,
   ...props
-}: React.ButtonHTMLAttributes<HTMLDivElement> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   headerTitle: string;
 }) => {
   return (
