@@ -40,16 +40,26 @@ export const registerIONodes = (config: FlumeConfig) => {
     label: "IO: Lazy",
     description: "Lazy node, doesn't trigger the next node until it's required by a running node",
     initialWidth: 200,
-    inputs: (ports) => [
-      ports.object({ name: "input", label: "Object" }),
-      ports.string({ name: "string", label: "String", noControls: true }),
-      ports.boolean({ name: "boolean", label: "Boolean" }),
-    ],
-    outputs: (ports) => [
-      ports.object({ name: "output", label: "Object" }),
-      ports.string({ name: "string", label: "String" }),
-      ports.boolean({ name: "boolean", label: "Boolean" }),
-    ],
+    inputs: (ports) => (data) => {
+      let dataPort = ports.object({ name: "input", label: "Payload (object)" });
+      const type = data?.inputType?.schema;
+      if (type && type !== "object") {
+        dataPort = ports[type]
+          ? ports[type]({ name: "input", label: `Payload (${type})` })
+          : ports.object({ name: "input", label: `Payload (${type}) - missing` });
+      }
+      return [ports.flexible({ name: "inputType" }), dataPort];
+    },
+    outputs: (ports) => (data) => {
+      let dataPort = ports.object({ name: "output", label: "Payload (object)" });
+      const type = data?.inputType?.schema;
+      if (type && type !== "object") {
+        dataPort = ports[type]
+          ? ports[type]({ name: "output", label: `Payload (${type})` })
+          : ports.object({ name: "output", label: `Payload (${type}) - missing` });
+      }
+      return [dataPort];
+    },
   });
 
   config.addNodeType({
