@@ -1,19 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Ajv, { AnySchema } from "ajv";
 import jsonata from "jsonata";
-import type { Connection, ConnectionMap, GraphNode, NodeMap } from "./type";
-export type { Connection, ConnectionMap, GraphNode, NodeMap };
-
-export type MaybePromise<T> = T | Promise<T>;
-
-export type ExternalFunctionHandler = (name: string, payload: any) => MaybePromise<any>;
+import type {
+  Connection,
+  ConnectionMap,
+  ExternalFunctionHandler,
+  GraphNode,
+  KVStore,
+  MaybePromise,
+  NodeMap,
+} from "./type";
+export type { Connection, ConnectionMap, ExternalFunctionHandler, GraphNode, KVStore, MaybePromise, NodeMap };
 
 const flattenConnectionMap = (connectionMap: ConnectionMap) => {
   return Object.values(connectionMap).flat();
 };
 
-// TODO: flume alias and group, number and number operator nodes, read/write data orders
 // TODO: resolve loop, maximum call for each run id
-export const handleNodeRun = async (
+const handleNodeRun = async (
   node: GraphNode,
   data: any,
   functionHandler: ExternalFunctionHandler,
@@ -160,11 +164,6 @@ export class Deferred<T> {
   }
 }
 
-export type KVStore = {
-  get(key: string): Promise<any>;
-  set(key: string, value: any): Promise<void>;
-};
-
 export const createMemoryKVStore = (): KVStore => {
   const data: Record<string, any> = {};
   return {
@@ -179,10 +178,36 @@ export const createMemoryKVStore = (): KVStore => {
 
 export class NodeRunner {
   private nodes: GraphNode[] = [];
-  constructor() {}
   promises = new Map<string, Deferred<unknown>>();
   started = new Map<string, boolean>();
   inputData: any;
+
+  private ajv = new Ajv();
+
+  constructor() {
+    this.addSchema("boolean", { type: "boolean" });
+    this.addSchema("string", { type: "string" });
+    this.addSchema("object", { type: "object" });
+    this.addSchema("number", { type: "number" });
+  }
+  public addSchema(name: string, schema: AnySchema) {
+    if (this.ajv.getSchema(name)) {
+      return;
+    }
+    if (typeof schema !== "boolean") {
+      schema.$id = name;
+    }
+    this.ajv.addSchema(schema);
+  }
+  public async validate(object: any, schemaName: string) {
+    const validate = this.ajv.getSchema(schemaName);
+    if (!validate) {
+      throw new Error(`No schema found with name ${schemaName}`);
+    }
+    const result = await validate(object);
+    return result === true;
+  }
+
   functionHandler: ExternalFunctionHandler = () => {};
   outputs: { [key: string]: any } = {};
   setFunctionHandler(functionHandler: ExternalFunctionHandler) {
@@ -222,10 +247,17 @@ export class NodeRunner {
               return;
             }
             const sourceNode = this.nodes.find((node) => node.id === connection.nodeId);
+
             if (!sourceNode) {
               throw new Error(`No source node found with id ${connection.nodeId}`);
             }
-            const promise = this.runNode(sourceNode).then((result: any) => {
+            const promise = this.runNode(sourceNode).then(async (result: any) => {
+              if (connection.portType) {
+                const valid = await this.validate(result[connection.portName], connection.portType);
+                if (!valid) {
+                  throw new Error(`Invalid type for port ${portName}: expected ${connection.portType}`);
+                }
+              }
               inputData[portName] = result[connection.portName];
             });
             return promise;

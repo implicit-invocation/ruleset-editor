@@ -114,9 +114,14 @@ const runBuildInFunction = async (name: string, payload: unknown) => {
 };
 
 export const defaultTestRunSetting: TestRunSetting = {
-  nodeRunner: () => {
+  nodeRunner: async () => {
     const runner = new NodeRunner();
     runner.setKVStore(LocalStorageKvStore);
+    const schemaList = await Configuration.functionProvider.getSchemaList();
+    for (const schemaName of schemaList) {
+      const schema = await Configuration.functionProvider.getSchema(schemaName);
+      runner.addSchema(schemaName, JSON.parse(schema));
+    }
     runner.setFunctionHandler(async (name, payload) => {
       if (name.startsWith("builtin:")) {
         return runBuildInFunction(name.substring(8, name.length), payload);

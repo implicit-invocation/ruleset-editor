@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@monaco-editor/loader": "^1.4.0",
+    "@sinclair/typebox": "^0.31.17",
+    "ajv": "^8.12.0",
     "console-feed": "^3.5.0",
     "events": "^3.3.0",
     "flume": "^1.0.4",

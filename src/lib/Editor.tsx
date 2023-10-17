@@ -4,7 +4,7 @@ import { AiOutlineExpand } from "react-icons/ai";
 import { Configuration } from ".";
 import { initConfig } from "./flume-config/config";
 import { registerAllSchemaPort } from "./flume-config/port/schema";
-import { NodeMap } from "./runtime";
+import { parseNodeMap } from "./runtime/util";
 import { IconButton } from "./ui/common/Button";
 import { BottomPanel } from "./ui/panel/BottomPanel";
 import { LeftPanel } from "./ui/panel/LeftPanel";
@@ -12,17 +12,11 @@ import { eventEmitter } from "./util/eventEmitter";
 import { OpenFileProvider, useOpenFile, useOpenFileContext } from "./util/file/openFile";
 import { DEFAULT_LIST, useSchemaList } from "./util/schema/hook";
 
-const convertNodeMap = (nodeMap: FlumeNodeMap): NodeMap => {
-  return {
-    ...nodeMap,
-  };
-};
-
 const testRun = async (nodeMap: FlumeNodeMap, data: unknown) => {
   console.log("==============================================");
   console.log("Start running with data: ", data);
   const runner = await Configuration.testRun.nodeRunner();
-  const result = await runner.run(convertNodeMap(nodeMap), data);
+  const result = await runner.run(parseNodeMap(nodeMap), data);
   console.log("Got the result: ", result);
   console.log("==============================================");
 };
