@@ -1,4 +1,4 @@
-import { FlumeConfig, NodeMap as FlumeNodeMap, NodeEditor } from "flume";
+import { FlumeConfig, NodeMap as FlumeNodeMap, NodeEditor } from "my-flume";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AiOutlineExpand } from "react-icons/ai";
 import { Configuration } from ".";

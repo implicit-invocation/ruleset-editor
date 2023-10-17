@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 import { createTriggerableNode } from "./triggerable";
 
 export const registerMiscNodes = (config: FlumeConfig) => {
@@ -14,6 +14,6 @@ export const registerMiscNodes = (config: FlumeConfig) => {
         ports.string({ name: "message", label: "Message" }),
         ports.boolean({ name: "boolean", label: "Boolean" }),
       ],
-    }),
+    })
   );
 };

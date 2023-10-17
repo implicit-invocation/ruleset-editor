@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 import { createWithLabelNode } from "./withLabel";
 
 export const registerDataNodes = (config: FlumeConfig) => {
@@ -20,6 +20,6 @@ export const registerDataNodes = (config: FlumeConfig) => {
       initialWidth: 200,
       inputs: (ports) => [ports.string({ name: "text", label: "Text" })],
       outputs: (ports) => [ports.string({ name: "text", label: "Text" })],
-    }),
+    })
   );
 };

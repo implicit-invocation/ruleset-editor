@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 
 export const registerLogicNodes = (config: FlumeConfig) => {
   config.addNodeType({

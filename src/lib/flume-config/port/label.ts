@@ -1,4 +1,4 @@
-import { Controls, FlumeConfig } from "flume";
+import { Controls, FlumeConfig } from "my-flume";
 import { createNodeLabelControl } from "./control/NodeLabel";
 
 export const registerLabelPort = (config: FlumeConfig) => {

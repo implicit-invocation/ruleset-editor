@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 import { createFlexibleInputNode, createFlexibleOutputNode, createTriggerableNode } from "./triggerable";
 
 export const registerIONodes = (config: FlumeConfig) => {

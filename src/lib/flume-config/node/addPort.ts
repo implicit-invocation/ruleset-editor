@@ -1,4 +1,4 @@
-import { NodeTypeConfig, PortType, PortTypeBuilder } from "flume";
+import { NodeTypeConfig, PortType, PortTypeBuilder } from "my-flume";
 
 export const addPorts = (
   config: NodeTypeConfig,
@@ -7,7 +7,7 @@ export const addPorts = (
     afterInput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
     beforeOutput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
     afterOutput?: PortType | ((ports: { [portType: string]: PortTypeBuilder }) => PortType);
-  },
+  }
 ): NodeTypeConfig => {
   let inputs = config.inputs;
   if (additional.beforeInput || additional.afterInput) {

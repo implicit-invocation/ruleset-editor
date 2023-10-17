@@ -1,4 +1,4 @@
-import { ControlRenderCallback } from "flume";
+import { ControlRenderCallback } from "my-flume";
 import { useSchemaList } from "../../../util/schema/hook";
 
 export const createFlexibleControl: ControlRenderCallback = (data, onChange, _context, _redraw, portProps) => {

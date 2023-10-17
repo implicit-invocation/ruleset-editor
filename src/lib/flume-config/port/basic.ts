@@ -1,4 +1,4 @@
-import { Colors, Controls, FlumeConfig } from "flume";
+import { Colors, Controls, FlumeConfig } from "my-flume";
 import { createExpressionControl } from "./control/ExpressionControl";
 import { createFunctionControl } from "./control/FunctionControl";
 

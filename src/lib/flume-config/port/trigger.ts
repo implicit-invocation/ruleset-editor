@@ -1,4 +1,4 @@
-import { Colors, FlumeConfig } from "flume";
+import { Colors, FlumeConfig } from "my-flume";
 
 export const registerTriggerPort = (config: FlumeConfig) => {
   config.addPortType({

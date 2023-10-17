@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 import { registerDataNodes } from "./node/data";
 import { registerExternalNodes } from "./node/external";
 import { registerIONodes } from "./node/io";

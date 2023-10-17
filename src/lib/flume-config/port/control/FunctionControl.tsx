@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ControlRenderCallback } from "flume";
+import { ControlRenderCallback } from "my-flume";
 
 export const createFunctionControl: ControlRenderCallback = (data, onChange) => {
   return (

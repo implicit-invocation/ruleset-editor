@@ -1,4 +1,4 @@
-import { Controls, FlumeConfig } from "flume";
+import { Controls, FlumeConfig } from "my-flume";
 import { createMultivarControl } from "./control/MultivarControl";
 
 export const registerMultivarPort = (config: FlumeConfig) => {

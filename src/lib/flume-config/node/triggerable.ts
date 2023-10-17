@@ -1,4 +1,4 @@
-import { NodeTypeConfig, PortType } from "flume";
+import { NodeTypeConfig, PortType } from "my-flume";
 import { addPorts } from "./addPort";
 import { createWithLabelNode } from "./withLabel";
 

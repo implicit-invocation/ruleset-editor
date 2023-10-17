@@ -1,4 +1,4 @@
-import { NodeMap } from "flume";
+import { NodeMap } from "my-flume";
 
 export type Item = {
   type: "item";

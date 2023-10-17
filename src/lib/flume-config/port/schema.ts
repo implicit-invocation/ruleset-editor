@@ -1,4 +1,4 @@
-import { Controls, FlumeConfig } from "flume";
+import { Controls, FlumeConfig } from "my-flume";
 import { createFlexibleControl } from "./control/FlexibleControl";
 
 export const registerFlexiblePort = (config: FlumeConfig) => {

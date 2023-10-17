@@ -1,4 +1,4 @@
-import { ControlRenderCallback } from "flume";
+import { ControlRenderCallback } from "my-flume";
 import { useState } from "react";
 import { useSchemaList } from "../../../util/schema/hook";
 

@@ -1,4 +1,4 @@
-import { FlumeConfig } from "flume";
+import { FlumeConfig } from "my-flume";
 import { createFlexibleOutputNode, createTriggerableNode } from "./triggerable";
 
 export const registerJsonataNode = (config: FlumeConfig) => {

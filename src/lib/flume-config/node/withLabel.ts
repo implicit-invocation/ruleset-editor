@@ -1,4 +1,4 @@
-import { NodeTypeConfig } from "flume";
+import { NodeTypeConfig } from "my-flume";
 import { addPorts } from "./addPort";
 
 // type NodeTypeConfig['inputs']
