@@ -255,7 +255,13 @@ export class NodeRunner {
               if (connection.portType) {
                 const valid = await this.validate(result[connection.portName], connection.portType);
                 if (!valid) {
-                  throw new Error(`Invalid type for port ${portName}: expected ${connection.portType}`);
+                  throw new Error(
+                    `Invalid type for port ${portName}: expected ${connection.portType} but got ${JSON.stringify(
+                      result[connection.portName],
+                      null,
+                      2
+                    )}`
+                  );
                 }
               }
               inputData[portName] = result[connection.portName];
